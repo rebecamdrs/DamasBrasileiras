@@ -59,12 +59,14 @@ class Controlador:
     def desenha_selecao(self, janela):
         if self.peca_selecionada:
             linha, coluna = self.peca_selecionada.linha, self.peca_selecionada.coluna
-            raio_externo = TAMANHO_QUADRADO // 2
-            pygame.draw.circle(janela, AZUL_CLARO, (coluna * TAMANHO_QUADRADO + raio_externo, linha * TAMANHO_QUADRADO + raio_externo), raio_externo - 5, 4)
+            x = coluna * TAMANHO_QUADRADO 
+            y = linha * TAMANHO_QUADRADO
+            raio_externo = TAMANHO_QUADRADO  // 2
+            pygame.draw.circle(janela, AZUL_CLARO, (x + raio_externo, y + raio_externo), raio_externo - 3, 4)
 
     def desenha_movimentos_validos(self, janela):
         for movimento in self.movimentos_validos:
             linha, coluna = movimento
             x = coluna * TAMANHO_QUADRADO 
             y = linha * TAMANHO_QUADRADO
-            pygame.draw.rect(janela, CINZA_CLARO, (x, y, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
+            pygame.draw.rect(janela, AZUL_CLARO, (x, y, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
