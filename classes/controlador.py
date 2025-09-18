@@ -23,6 +23,9 @@ class Controlador:
     def resetar_jogo(self):
         self._init()
 
+    def turno_atual(self):
+        return self.turno
+
     def _mover(self, linha, coluna):
         peca_mover = self.peca_selecionada
         if peca_mover and (linha, coluna) in self.movimentos_validos:

@@ -10,7 +10,8 @@ class Tabuleiro:
         self.desenha_tabuleiro()
 
     def desenha_quadrados(self, janela):
-        janela.fill(CINZA)
+        #janela.fill(CINZA)
+        #rect_tabuleiro = pygame.Rect(0,0,LARGURA,ALTURA)
         for linha in range(LINHAS):
             for coluna in range(linha % 2, COLUNAS, 2):
                 pygame.draw.rect(janela, BRANCO, (linha * TAMANHO_QUADRADO, coluna * TAMANHO_QUADRADO, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
@@ -43,7 +44,6 @@ class Tabuleiro:
     def mover(self, peca, linha, coluna):
         self.tabuleiro[peca.linha][peca.coluna], self.tabuleiro[linha][coluna] = self.tabuleiro[linha][coluna], self.tabuleiro[peca.linha][peca.coluna]
         peca.mover(linha, coluna)
-
         if (linha == LINHAS - 1 and peca.cor == ROSA) or (linha == 0 and peca.cor == BRANCO):
             if not peca.eh_dama:
                 peca.vira_dama()
@@ -54,6 +54,9 @@ class Tabuleiro:
     
     def obtem_peca(self, linha, coluna):
         return self.tabuleiro[linha][coluna]
+    
+    def retorna_qnt_pecas(self):
+        return (self.pecas_rosas, self.pecas_brancas)
     
     def remover(self, pecas):
         for peca in pecas:
@@ -86,9 +89,21 @@ class Tabuleiro:
                         else:
                             movimentos[(linha_atual, coluna_atual)] = []
                     elif peca_no_caminho.cor == peca.cor:
+                        # NAO SELECIONA A PEÇA
                         break
                     else:
                         if peca_capturada:
+                            linha_capturada = peca_capturada.linha
+                            coluna_capturada = peca_capturada.coluna
+                            if peca.cor == BRANCO and coluna_capturada < linha:
+                                percorrer_diagonal((-1, -1))
+                            '''
+                            BRANCO
+                            pode ser na direita ou na esquerda
+                            x| |x
+                             |b|
+                            pega a linha e a coluna da peça
+                            '''
                             break
                         else:
                             peca_capturada = peca_no_caminho
@@ -105,9 +120,9 @@ class Tabuleiro:
                 percorrer_diagonal([(1, -1), (1, 1)])
         
         movimentos_com_captura = {}
-        for k,v in movimentos.items():
-            if v:
-                movimentos_com_captura[k] = v
+        for chave, valores in movimentos.items():
+            if valores:
+                movimentos_com_captura[chave] = valores
 
         if movimentos_com_captura:
             return movimentos_com_captura
