@@ -32,6 +32,12 @@ def tela_jogo(tela):
         # Textos
         tabuleiro_objeto = Tabuleiro()
         rosas_restantes, brancas_restantes = tabuleiro_objeto.retorna_qnt_pecas()
+        
+        """
+        rosas_restantes = controlador.tabuleiro.pecas_rosas
+        brancas_restantes = controlador.tabuleiro.pecas_brancas
+        """
+        
         desenha_texto(str(rosas_restantes), FONTE_PLACAR, BRANCO, 798, 94, tela) # peças rosas restantes
         desenha_texto(str(12 - brancas_restantes), FONTE_PLACAR, BRANCO, 798, 155, tela) # peças brancas capturadas
         desenha_texto(str(brancas_restantes), FONTE_PLACAR, BRANCO, 798, 420, tela) # peças brancas restantes
@@ -45,6 +51,15 @@ def tela_jogo(tela):
         else:
             turno = 'ROSA'
             cor = ROSA
+
+        """
+        cor = controlador.turno
+        if cor == BRANCO: 
+            turno = 'BRANCO'
+        else:
+            turno = 'ROSA'
+        """
+
         desenha_texto(turno, FONTE_GRANDE, cor, 707, 300, tela) # cor do turno
 
         controlador.atualiza_jogo()

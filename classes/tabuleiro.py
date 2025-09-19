@@ -55,6 +55,7 @@ class Tabuleiro:
     def obtem_peca(self, linha, coluna):
         return self.tabuleiro[linha][coluna]
     
+    # não precisa
     def retorna_qnt_pecas(self):
         return (self.pecas_rosas, self.pecas_brancas)
     
@@ -62,68 +63,106 @@ class Tabuleiro:
         for peca in pecas:
             self.tabuleiro[peca.linha][peca.coluna] = 0
             if peca != 0:
-                if peca.cor == BRANCO:
-                    self.pecas_brancas -= 1
-                else:
-                    self.pecas_rosas -= 1
-    
-    def get_movimentos_validos(self, peca):
-        movimentos = {}
-        linha, coluna = peca.linha, peca.coluna
-
-        def percorrer_diagonal(direcoes):
-            for d_linha, d_coluna in direcoes:
-                peca_capturada = None
-                for i in range(1, LINHAS):
-                    linha_atual = linha + i * d_linha
-                    coluna_atual = coluna + i * d_coluna
-
-                    if not (0 <= linha_atual < LINHAS and 0 <= coluna_atual < COLUNAS):
-                        break
-
-                    peca_no_caminho = self.tabuleiro[linha_atual][coluna_atual]
-
-                    if peca_no_caminho == 0:
-                        if peca_capturada:
-                            movimentos[(linha_atual, coluna_atual)] = [peca_capturada]
-                        else:
-                            movimentos[(linha_atual, coluna_atual)] = []
-                    elif peca_no_caminho.cor == peca.cor:
-                        # NAO SELECIONA A PEÇA
-                        break
+                if peca.eh_dama:
+                    if peca.cor == BRANCO:
+                        self.damas_brancas -= 1
                     else:
-                        if peca_capturada:
-                            linha_capturada = peca_capturada.linha
-                            coluna_capturada = peca_capturada.coluna
-                            if peca.cor == BRANCO and coluna_capturada < linha:
-                                percorrer_diagonal((-1, -1))
-                            '''
-                            BRANCO
-                            pode ser na direita ou na esquerda
-                            x| |x
-                             |b|
-                            pega a linha e a coluna da peça
-                            '''
-                            break
-                        else:
-                            peca_capturada = peca_no_caminho
-
-                    if not peca.eh_dama:
-                        break
-
-        if peca.eh_dama:
-            percorrer_diagonal([(-1, -1), (-1, 1), (1, -1), (1, 1)])
-        else:
-            if peca.cor == BRANCO:
-                percorrer_diagonal([(-1, -1), (-1, 1)])
-            else:
-                percorrer_diagonal([(1, -1), (1, 1)])
+                        self.damas_rosas -= 1
+                else:
+                    if peca.cor == BRANCO:
+                        self.pecas_brancas -= 1
+                    else:
+                        self.pecas_rosas -= 1
+    
+    def movimentos_validos(self, peca):
+        """ Gerencia a obtenção de movimentos válidos.  """
+        movimentos = {}
         
-        movimentos_com_captura = {}
-        for chave, valores in movimentos.items():
-            if valores:
-                movimentos_com_captura[chave] = valores
+        if peca.eh_dama:
+            movimentos = self._movimentos_dama(peca)
+        else:
+            movimentos = self._movimentos_peca(peca)
 
-        if movimentos_com_captura:
-            return movimentos_com_captura
+        movimentos_captura = {}
+        for posicao, peca_capturada in movimentos.items():
+            if peca_capturada:
+                movimentos_captura[posicao] = peca_capturada
+        
+        if movimentos_captura:
+            return movimentos_captura
         return movimentos
+
+    def _movimentos_peca(self, peca):
+        """ Calcula os movimentos de uma peça que não é Dama """
+        movimentos = {}
+        # Define a direção do movimento com base na cor da peça
+        if peca.cor == BRANCO:
+            direcao_linha = -1
+        else:
+            direcao_linha = 1
+        
+        # Verifica as diagonais
+        for direcao_coluna in [-1, 1]:
+            linha_alvo = peca.linha + direcao_linha
+            coluna_alvo = peca.coluna + direcao_coluna
+
+            # Verifica se a casa está no tabuleiro
+            if 0 <= linha_alvo < LINHAS and 0 <= coluna_alvo < COLUNAS:
+                peca_caminho = self.tabuleiro[linha_alvo][coluna_alvo]
+
+                # A casa está vazia, movimento permitido
+                if peca_caminho == 0:
+                    movimentos[(linha_alvo, coluna_alvo)] = []
+
+                # A casa tem uma peça inimiga, potencial captura
+                elif peca_caminho.cor != peca.cor: 
+                    # Calcula a posição de pouso do salto
+                    linha_salto = peca.linha + 2 * direcao_linha
+                    coluna_salto = peca.coluna + 2 * direcao_coluna
+                    # Verifica se a casa de pouso está dentro do tabuleiro e vazia
+                    if 0 <= linha_salto < LINHAS and 0 <= coluna_salto < COLUNAS and self.tabuleiro[linha_salto][coluna_salto] == 0:
+                        movimentos[(linha_salto, coluna_salto)] = [peca_caminho]
+        return movimentos
+
+    def _movimentos_dama(self, peca):
+        """ Calcula os movimentos para uma Dama """
+        movimentos = {}
+        direcoes = [(-1, -1), (-1, 1), (1, -1), (1,1)]
+
+        for d_linha, d_coluna in direcoes:
+            movimentos.update(self._verifica_diagonal(peca, d_linha, d_coluna))
+        return movimentos
+
+    def _verifica_diagonal(self, peca, d_linha, d_coluna):
+        """ Caminha por uma diagonal, encontrando os movimentos válidos para a Dama """
+        movimentos_diagonal = {}
+        # Armazena a peça inimiga que pode ser capturada no caminho
+        peca_capturada = None
+
+        # Itera pelas casas na diagonal, começando a 1 passo da Dama
+        for i in range(1, LINHAS):
+            linha_atual = peca.linha + i * d_linha
+            coluna_atual = peca.coluna + i * d_coluna
+
+            if not(0 <= linha_atual < LINHAS and 0 <= coluna_atual < COLUNAS):
+                break
+            peca_caminho = self.tabuleiro[linha_atual][coluna_atual]
+
+            # Encontrou uma casa vazia
+            if peca_caminho == 0:
+                if peca_capturada:
+                    movimentos_diagonal[(linha_atual, coluna_atual)] = [peca_capturada]
+                else:
+                    movimentos_diagonal[(linha_atual, coluna_atual)] = []
+            
+            # Encontrou uma peça amiga
+            elif peca_caminho.cor == peca.cor:
+                break
+
+            # Encontrou uma peça inimiga
+            else:
+                if peca_capturada:
+                    break # AJUSTAR PARA CAPTURAR MAIS DE UMA PEÇA
+                else:
+                    peca_capturada = peca_caminho
+        return movimentos_diagonal
