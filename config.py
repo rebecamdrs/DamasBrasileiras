@@ -3,8 +3,10 @@ pygame.font.init()
 
 ''' GERAL'''
 FPS = 60
-FONTE_PLACAR = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 22)
-FONTE_GRANDE = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 28)
+LETRA_PEQUENA = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 14)
+LETRA_PLACAR = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 22)
+LETRA_GRANDE = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 28)
+PRINCIPAL = pygame.font.Font('assets/font/CrunchChips.ttf', 76)
 
 ''' CORES '''
 PRETO = (8, 20, 32)
@@ -34,6 +36,9 @@ DAMA_BRANCA = pygame.transform.scale(pygame.image.load('assets/images/dama_branc
 
 # Logo
 LOGO = pygame.transform.scale(pygame.image.load('assets/images/logo.png'), (329, 149.75))
+
+# Estrelas
+ESTRELAS = pygame.transform.scale(pygame.image.load('assets/images/estrelas.png'), (198.78, 80.25))
 
 # Botões
 BOTAO_JOGAR = pygame.transform.scale(pygame.image.load('assets/images/botao_jogar.png'), (280, 62))

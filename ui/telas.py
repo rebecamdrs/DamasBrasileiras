@@ -3,20 +3,49 @@ from config import *
 from functions import *
 from .botao import Botao
 from classes.controlador import Controlador
-from classes.tabuleiro import Tabuleiro
 
-# FUNCAO APENAS PARA TESTE
 def tela_vencedor(tela, vencedor):
-    tela.fill(AZUL_CLARO)
-    fonte = pygame.font.SysFont('Montserrat', 40)
-    if vencedor == BRANCO:
-        texto = 'BRANCO VENCEU!'
-    elif vencedor == ROSA:
-        texto = 'ROSA VENCEU!'
-    else:
-        texto = 'EMPATE'
-    render_texto = fonte.render(texto, True, ROSA)
-    tela.blit(render_texto, (TELA_LARGURA//2 - render_texto.get_width()//2, TELA_ALTURA//2 - render_texto.get_height()//2))
+    fechar_tela = False
+    while not fechar_tela:
+        for evento in pygame.event.get():
+            if evento.type == pygame.KEYDOWN:
+                fechar_tela = True
+
+        # Definir cor da tela com base no resultado
+        if vencedor == ROSA:
+            cor_tela = ROSA
+        elif vencedor == BRANCO:
+            cor_tela = BRANCO
+        else:
+            cor_tela = AZUL_CLARO
+        tela.fill(cor_tela)
+
+        # Retangulo azul escuro
+        pygame.draw.rect(tela, AZUL_ESCURO, (0, ((TELA_ALTURA-350)//2), TELA_LARGURA, 350))
+
+        # Texto de vencedor
+        if vencedor == BRANCO:
+            texto = 'BRANCO VENCEU!'
+        elif vencedor == ROSA:
+            texto = 'ROSA VENCEU!'
+        else:
+            texto = 'EMPATE'
+        render_texto = PRINCIPAL.render(texto, True, BRANCO)
+
+        if vencedor == ROSA or vencedor == BRANCO:
+            tela.blit(render_texto, (TELA_LARGURA//2 - render_texto.get_width()//2, (TELA_ALTURA//2 + 25) - render_texto.get_height()//2))
+            # Estrelas
+            tela.blit(ESTRELAS, (TELA_LARGURA//2 - ESTRELAS.get_width()//2, (TELA_ALTURA//2 - 60) - ESTRELAS.get_height()//2))
+            # Texto sair
+            texto_sair = LETRA_PEQUENA.render('CLIQUE EM QUALQUER TECLA PARA VOLTAR AO MENU.', True, BRANCO)
+            tela.blit(texto_sair, (TELA_LARGURA//2 - texto_sair.get_width()//2, (TELA_ALTURA//2 + 85) - texto_sair.get_height()//2))
+        else:
+            tela.blit(render_texto, (TELA_LARGURA//2 - render_texto.get_width()//2, TELA_ALTURA//2 - render_texto.get_height()//2))
+            # Texto sair
+            texto_sair = LETRA_PEQUENA.render('CLIQUE EM QUALQUER TECLA PARA VOLTAR AO MENU.', True, BRANCO)
+            tela.blit(texto_sair, (TELA_LARGURA//2 - texto_sair.get_width()//2, (TELA_ALTURA//2 + 50) - texto_sair.get_height()//2))
+                
+        pygame.display.update()
 
 def tela_jogo(tela, tabuleiro):
     clock = pygame.time.Clock()
@@ -39,7 +68,6 @@ def tela_jogo(tela, tabuleiro):
                 else:
                     pass # Clique fora do tabuleiro pode ignora
 
-        controlador.atualiza_jogo()
 
         # Background e Tabuleiro
         tela.blit(BG_TELA_JOGO, (0, 0))
@@ -53,9 +81,12 @@ def tela_jogo(tela, tabuleiro):
         cor = controlador.turno
         turno(tela, cor)
 
-        if brancas_restantes == 0 or rosas_restantes == 0:
+        # Verifica se o jogo terminou
+        if controlador.vencedor is not None:
             tela_vencedor(tela, controlador.vencedor)
+            return
 
+        controlador.atualiza_jogo()
         clock.tick(FPS)
         pygame.display.update()
 
@@ -72,7 +103,6 @@ def tela_regras(tela):
 
         tela.blit(BG_TELA_REGRAS, (0, 0))
         pygame.display.update()
-        
 
 def tela_inicial(tela, tabuleiro):
     rodando = True

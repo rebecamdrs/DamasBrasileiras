@@ -20,7 +20,7 @@ class Controlador:
             self.desenha_selecao(self.janela)
             self.desenha_movimentos_validos(self.janela)
         
-        if self.vencedor is not None:
+        if self.vencedor is None:
             self.vencedor = self.verifica_vitoria()
         pygame.display.update()
 
@@ -29,7 +29,8 @@ class Controlador:
             return ROSA
         elif self.tabuleiro.pecas_rosas == 0 and self.tabuleiro.damas_rosas == 0:
             return BRANCO
-        # OPCAO PARA SEM SAIR
+        elif self.tabuleiro.pecas_brancas == 1 and self.tabuleiro.pecas_rosas == 1:
+            return 'EMPATE'
         return None
 
     def resetar_jogo(self):
