@@ -14,14 +14,6 @@ class Controlador:
         self.turno = BRANCO
         self.movimentos_validos = {}
 
-    def verifica_vitoria(self):
-        if self.tabuleiro.pecas_brancas == 0 and self.tabuleiro.damas_brancas == 0:
-            return ROSA
-        elif self.tabuleiro.pecas_rosas == 0 and self.tabuleiro.damas_rosas == 0:
-            return BRANCO
-        # OPCAO PARA SEM SAIR
-        return None
-
     def atualiza_jogo(self):
         self.tabuleiro.monta_tabuleiro(self.janela)
         if self.peca_selecionada:
@@ -32,12 +24,16 @@ class Controlador:
             self.vencedor = self.verifica_vitoria()
         pygame.display.update()
 
+    def verifica_vitoria(self):
+        if self.tabuleiro.pecas_brancas == 0 and self.tabuleiro.damas_brancas == 0:
+            return ROSA
+        elif self.tabuleiro.pecas_rosas == 0 and self.tabuleiro.damas_rosas == 0:
+            return BRANCO
+        # OPCAO PARA SEM SAIR
+        return None
+
     def resetar_jogo(self):
         self._init()
-
-    # não precisa
-    def turno_atual(self):
-        return self.turno
 
     def _mover(self, linha, coluna):
         peca_mover = self.peca_selecionada
@@ -54,7 +50,6 @@ class Controlador:
     def mudar_turno(self):
         self.peca_selecionada = None
         self.movimentos_validos = {}
-
         if self.turno == BRANCO:
             self.turno = ROSA
         else:
@@ -64,7 +59,6 @@ class Controlador:
         if (linha, coluna) in self.movimentos_validos:
             self._mover(linha, coluna)
             return
-        
         peca = self.tabuleiro.obtem_peca(linha, coluna)
         if peca != 0 and peca.cor == self.turno:
             self.peca_selecionada = peca
@@ -87,14 +81,3 @@ class Controlador:
             x = coluna * TAMANHO_QUADRADO 
             y = linha * TAMANHO_QUADRADO
             pygame.draw.rect(janela, AZUL_CLARO, (x, y, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
-    
-    # FUNCAO APENAS PARA TESTE
-    def tela_vencedor(self, vencedor):
-        self.janela.fill(AZUL_CLARO)
-        fonte = pygame.font.SysFont('Montserrat', 40)
-        if vencedor == BRANCO:
-            texto = 'BRANCO VENCEU!'
-        else:
-            texto = 'ROSA VENCEU!'
-        render_texto = fonte.render(texto, True, vencedor)
-        self.janela.blit(render_texto, (LARGURA//2 - render_texto.get_width()//2, ALTURA//2 - render_texto.get_height()//2))

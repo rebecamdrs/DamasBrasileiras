@@ -10,8 +10,7 @@ class Tabuleiro:
         self.desenha_tabuleiro()
 
     def desenha_quadrados(self, janela):
-        #janela.fill(CINZA)
-        #rect_tabuleiro = pygame.Rect(0,0,LARGURA,ALTURA)
+        janela.fill(CINZA)
         for linha in range(LINHAS):
             for coluna in range(linha % 2, COLUNAS, 2):
                 pygame.draw.rect(janela, BRANCO, (linha * TAMANHO_QUADRADO, coluna * TAMANHO_QUADRADO, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
@@ -55,10 +54,6 @@ class Tabuleiro:
     def obtem_peca(self, linha, coluna):
         return self.tabuleiro[linha][coluna]
     
-    # não precisa
-    def retorna_qnt_pecas(self):
-        return (self.pecas_rosas, self.pecas_brancas)
-    
     def remover(self, pecas):
         for peca in pecas:
             self.tabuleiro[peca.linha][peca.coluna] = 0
@@ -77,7 +72,6 @@ class Tabuleiro:
     def movimentos_validos(self, peca):
         """ Gerencia a obtenção de movimentos válidos.  """
         movimentos = {}
-        
         if peca.eh_dama:
             movimentos = self._movimentos_dama(peca)
         else:
@@ -127,7 +121,7 @@ class Tabuleiro:
     def _movimentos_dama(self, peca):
         """ Calcula os movimentos para uma Dama """
         movimentos = {}
-        direcoes = [(-1, -1), (-1, 1), (1, -1), (1,1)]
+        direcoes = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 
         for d_linha, d_coluna in direcoes:
             movimentos.update(self._verifica_diagonal(peca, d_linha, d_coluna))
