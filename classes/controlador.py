@@ -20,7 +20,9 @@ class Controlador:
             self.desenha_selecao(self.janela)
             self.desenha_movimentos_validos(self.janela)
         
-        if self.vencedor is None:
+        if self.vencedor is not None:
+            self.tela_vencedor(self.vencedor)
+        else:
             self.vencedor = self.verifica_vitoria()
         pygame.display.update()
 
