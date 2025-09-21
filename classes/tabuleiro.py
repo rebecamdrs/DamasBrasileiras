@@ -54,7 +54,7 @@ class Tabuleiro:
     def obtem_peca(self, linha, coluna):
         return self.tabuleiro[linha][coluna]
     
-    '''def remover(self, pecas):
+    def remover(self, pecas):
         for peca in pecas:
             self.tabuleiro[peca.linha][peca.coluna] = 0
             if peca != 0:
@@ -67,15 +67,15 @@ class Tabuleiro:
                     if peca.cor == BRANCO:
                         self.pecas_brancas -= 1
                     else:
-                        self.pecas_rosas -= 1'''
+                        self.pecas_rosas -= 1
 
-    def remover(self, pecas):
+    '''def remover(self, pecas):
         for peca in pecas:
             self.tabuleiro[peca.linha][peca.coluna] = 0
             if peca.cor == BRANCO:
                 self.pecas_brancas -= 1
             else:
-                self.pecas_rosas -= 1
+                self.pecas_rosas -= 1'''
     
     def movimentos_validos(self, peca):
         """ Gerencia a obtenção de movimentos válidos.  """
