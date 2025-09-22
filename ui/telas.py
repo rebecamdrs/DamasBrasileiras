@@ -43,9 +43,7 @@ def pop_up(tela, rosas_restantes, brancas_restantes):
                     escolha = "sair"
 
         pygame.display.update()
-
     return escolha
-
 
 def tela_vencedor(tela, vencedor):
     clock = pygame.time.Clock()
@@ -122,17 +120,11 @@ def tela_jogo(tela, tabuleiro):
         
         # Voltar ao menu ou sair
         for evento in pygame.event.get():
-            '''if evento.type == pygame.QUIT:
-                pop_up(tela, rosas_restantes, brancas_restantes)
-                return '''
-            
-            # CHATGPT
             if evento.type == pygame.QUIT:
                 escolha = pop_up(tela, rosas_restantes, brancas_restantes)
                 if escolha == "sair":
                     fechar_tela = True  # sai do jogo
                 # se for "continuar", não faz nada e volta ao loop normal
-
             
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 posicao = pygame.mouse.get_pos()

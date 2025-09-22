@@ -18,6 +18,7 @@ BRANCO = (255, 255, 255)
 BRANCO_OFF = (242, 242, 242)
 ROSA = (240, 72, 164)
 AZUL_CLARO = (130, 229, 223)
+VERMELHO = (255, 0, 0)
 
 ''' DIMENSÕES '''
 # Tabuleiro

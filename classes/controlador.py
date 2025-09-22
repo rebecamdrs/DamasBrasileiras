@@ -13,14 +13,17 @@ class Controlador:
         self.tabuleiro = Tabuleiro()
         self.turno = BRANCO
         self.movimentos_validos = {}
+        self.capturas_obrigatorias = {}
+        self.peca_invalida = None
+        self.tempo_feedback = 0
 
     def verifica_vitoria(self):
         if self.tabuleiro.pecas_brancas == 0 and self.tabuleiro.damas_brancas == 0:
             return ROSA
         elif self.tabuleiro.pecas_rosas == 0 and self.tabuleiro.damas_rosas == 0:
             return BRANCO
-        elif self.tabuleiro.pecas_brancas == 1 and self.tabuleiro.pecas_rosas == 1:
-            return 'EMPATE'
+        #elif self.tabuleiro.pecas_brancas == 1 and self.tabuleiro.pecas_rosas == 1:
+        #    return 'EMPATE'
         return None
 
     def atualiza_jogo(self):
@@ -29,6 +32,8 @@ class Controlador:
             self.desenha_selecao(self.janela)
             self.desenha_movimentos_validos(self.janela)
         
+        self.desenha_selecao_invalida(self.janela)
+
         if self.vencedor is not None:
             self.tela_vencedor(self.vencedor)
         else:
@@ -69,6 +74,25 @@ class Controlador:
             return True # O movimento foi válido
         return False # O movimento era inválido
 
+    def _verificar_capturas(self):
+        """ Verificar o tabuleito inteiro para encontrar todas as capturas obrigatótias do turno atual """
+        self.capturas_obrigatorias = {}
+
+        # Percorre por cada casa do tabuleiro
+        for linha in range(LINHAS):
+            for coluna in range(COLUNAS):
+                peca = self.tabuleiro.obtem_peca(linha, coluna)
+
+                # Verifica se a peça pertence ao jogador da vez
+                if peca != 0 and peca.cor == self.turno:
+                    movimentos_da_peca = self.tabuleiro.movimentos_validos(peca)
+
+                    if movimentos_da_peca:
+                        primeiro_lista_captura = list(movimentos_da_peca.values())[0]
+
+                        if primeiro_lista_captura:
+                            self.capturas_obrigatorias[peca] = movimentos_da_peca
+
     def mudar_turno(self):
         self.peca_selecionada = None
         self.movimentos_validos = {}
@@ -77,6 +101,7 @@ class Controlador:
             self.turno = ROSA
         else:
             self.turno = BRANCO
+        self._verificar_capturas()
 
     def gerencia_clique(self, linha, coluna):
         if (linha, coluna) in self.movimentos_validos:
@@ -85,14 +110,21 @@ class Controlador:
         
         peca = self.tabuleiro.obtem_peca(linha, coluna)
 
+        if self.capturas_obrigatorias and peca not in self.capturas_obrigatorias:
+            return
+
         if peca != 0 and peca.cor == self.turno:
             movimentos_possiveis = self.tabuleiro.movimentos_validos(peca)
             if movimentos_possiveis:
+                self.desenha_selecao_invalida(self.janela)
                 self.peca_selecionada = peca
-                self.movimentos_validos = self.tabuleiro.movimentos_validos(peca)
-        else:
-            self.peca_selecionada = None
-            self.movimentos_validos = {}
+                self.movimentos_validos = movimentos_possiveis
+                return
+        
+        self.peca_invalida = peca
+        self.tempo_feedback = pygame.time.get_ticks()
+        self.peca_selecionada = None
+        self.movimentos_validos = {}
     
     def desenha_selecao(self, janela):
         if self.peca_selecionada:
@@ -108,3 +140,19 @@ class Controlador:
             x = coluna * TAMANHO_QUADRADO 
             y = linha * TAMANHO_QUADRADO
             pygame.draw.rect(janela, AZUL_CLARO, (x, y, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
+
+    def desenha_selecao_invalida(self, janela):
+        """Desenha um círculo vermelho ao redor de uma peça selecionada invalidamente """
+        if self.peca_invalida:
+            duracao_ms = 500  # O círculo aparecerá por 0.5 segundos
+            agora = pygame.time.get_ticks()
+
+            if agora - self.tempo_feedback < duracao_ms:
+                linha, coluna = self.peca_invalida.linha, self.peca_invalida.coluna
+                x = coluna * TAMANHO_QUADRADO
+                y = linha * TAMANHO_QUADRADO
+                raio_externo = TAMANHO_QUADRADO // 2
+                pygame.draw.circle(janela, VERMELHO, (x + raio_externo, y + raio_externo), raio_externo - 3, 4)
+            else:
+                # Limpa a variável após o tempo expirar
+                self.peca_invalida = None
