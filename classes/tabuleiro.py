@@ -7,6 +7,7 @@ class Tabuleiro:
         self.tabuleiro = []
         self.pecas_rosas, self.pecas_brancas = 12, 12
         self.damas_rosas, self.damas_brancas = 0, 0
+        self.direcoes = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
         self.atualiza_contagem_total()
         self.desenha_tabuleiro()
 
@@ -40,6 +41,10 @@ class Tabuleiro:
                 peca = self.tabuleiro[linha][coluna]
                 if peca != 0:
                     peca.cria_peca(janela)
+    
+    def atualiza_contagem_total(self):
+        self.rosas_totais = self.pecas_rosas + self.damas_rosas
+        self.brancas_totais = self.pecas_brancas + self.damas_brancas
 
     def mover(self, peca, linha, coluna):
         self.tabuleiro[peca.linha][peca.coluna], self.tabuleiro[linha][coluna] = self.tabuleiro[linha][coluna], self.tabuleiro[peca.linha][peca.coluna]
@@ -57,10 +62,6 @@ class Tabuleiro:
     
     def obtem_peca(self, linha, coluna):
         return self.tabuleiro[linha][coluna]
-    
-    def atualiza_contagem_total(self):
-        self.rosas_totais = self.pecas_rosas + self.damas_rosas
-        self.brancas_totais = self.pecas_brancas + self.damas_brancas
 
     def remover(self, pecas):
         for peca in pecas:
@@ -98,14 +99,10 @@ class Tabuleiro:
     def _movimentos_peca(self, peca):
         """ Calcula os movimentos de uma peça que não é Dama """
         movimentos = {}
-        # Define a direção do movimento com base na cor da peça
-        if peca.cor == BRANCO:
-            direcao_linha = -1
-        else:
-            direcao_linha = 1
         
-        # Verifica as diagonais
-        for direcao_coluna in [-1, 1]:
+        # Percorre todas as direções diagonais possíveis
+        for direcao_linha, direcao_coluna in self.direcoes:
+            # Calcula a coordenada da casa de destino
             linha_alvo = peca.linha + direcao_linha
             coluna_alvo = peca.coluna + direcao_coluna
 
@@ -113,9 +110,21 @@ class Tabuleiro:
             if 0 <= linha_alvo < LINHAS and 0 <= coluna_alvo < COLUNAS:
                 peca_caminho = self.tabuleiro[linha_alvo][coluna_alvo]
 
-                # A casa está vazia, movimento permitido
+                # A casa está vazia
                 if peca_caminho == 0:
-                    movimentos[(linha_alvo, coluna_alvo)] = []
+                    movimento_valido = False
+                    
+                    # Peças brancas só podem se mover para linhas com íncide menor 
+                    if peca.cor == BRANCO and direcao_linha == -1:
+                        movimento_valido = True
+
+                    # Peças rosas só podem se mover para linhas com íncide maior 
+                    elif peca.cor == ROSA and direcao_linha == 1:
+                        movimento_valido = True
+                    
+                    # Se o movimento é válido, adiciona a posição no dicionário de movimentos
+                    if movimento_valido:
+                        movimentos[(linha_alvo, coluna_alvo)] = []
 
                 # A casa tem uma peça inimiga, potencial captura
                 elif peca_caminho.cor != peca.cor: 
@@ -130,9 +139,8 @@ class Tabuleiro:
     def _movimentos_dama(self, peca):
         """ Calcula os movimentos para uma Dama """
         movimentos = {}
-        direcoes = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 
-        for d_linha, d_coluna in direcoes:
+        for d_linha, d_coluna in self.direcoes:
             movimentos.update(self._verifica_diagonal(peca, d_linha, d_coluna))
         return movimentos
 

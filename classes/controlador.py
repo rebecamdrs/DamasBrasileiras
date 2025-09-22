@@ -14,6 +14,15 @@ class Controlador:
         self.turno = BRANCO
         self.movimentos_validos = {}
 
+    def verifica_vitoria(self):
+        if self.tabuleiro.pecas_brancas == 0 and self.tabuleiro.damas_brancas == 0:
+            return ROSA
+        elif self.tabuleiro.pecas_rosas == 0 and self.tabuleiro.damas_rosas == 0:
+            return BRANCO
+        elif self.tabuleiro.pecas_brancas == 1 and self.tabuleiro.pecas_rosas == 1:
+            return 'EMPATE'
+        return None
+
     def atualiza_jogo(self):
         self.tabuleiro.monta_tabuleiro(self.janela)
         if self.peca_selecionada:
@@ -26,33 +35,44 @@ class Controlador:
             self.vencedor = self.verifica_vitoria()
         pygame.display.update()
 
-    def verifica_vitoria(self):
-        if self.tabuleiro.pecas_brancas == 0 and self.tabuleiro.damas_brancas == 0:
-            return ROSA
-        elif self.tabuleiro.pecas_rosas == 0 and self.tabuleiro.damas_rosas == 0:
-            return BRANCO
-        elif self.tabuleiro.pecas_brancas == 1 and self.tabuleiro.pecas_rosas == 1:
-            return 'EMPATE'
-        return None
-
     def resetar_jogo(self):
         self._init()
 
     def _mover(self, linha, coluna):
         peca_mover = self.peca_selecionada
+
         if peca_mover and (linha, coluna) in self.movimentos_validos:
             pecas_capturadas = self.movimentos_validos[(linha, coluna)]
             self.tabuleiro.mover(peca_mover, linha, coluna)
+
+            # Se houve captura, remove a peça e em seguida procura novas capturas a partir da nova posição
             if pecas_capturadas:
                 self.tabuleiro.remover(pecas_capturadas)
-            self.mudar_turno()
-        else:
-            return False
-        return True
+                novos_movimentos = self.tabuleiro.movimentos_validos(peca_mover)
+
+                novas_capturas = {}
+                for posicao, lista_pecas in novos_movimentos.items():
+                    if lista_pecas:
+                        novas_capturas[posicao] = lista_pecas
+
+                # Se há nova captura, o turno não muda
+                if novas_capturas:
+                    self.movimentos_validos = novas_capturas
+                # Se não, muda o turno
+                else:
+                    self.mudar_turno()
+
+            # Se foi apenas uma captura, muda o turno
+            else:
+                self.mudar_turno()
+            
+            return True # O movimento foi válido
+        return False # O movimento era inválido
 
     def mudar_turno(self):
         self.peca_selecionada = None
         self.movimentos_validos = {}
+
         if self.turno == BRANCO:
             self.turno = ROSA
         else:
@@ -62,10 +82,14 @@ class Controlador:
         if (linha, coluna) in self.movimentos_validos:
             self._mover(linha, coluna)
             return
+        
         peca = self.tabuleiro.obtem_peca(linha, coluna)
+
         if peca != 0 and peca.cor == self.turno:
-            self.peca_selecionada = peca
-            self.movimentos_validos = self.tabuleiro.movimentos_validos(peca)
+            movimentos_possiveis = self.tabuleiro.movimentos_validos(peca)
+            if movimentos_possiveis:
+                self.peca_selecionada = peca
+                self.movimentos_validos = self.tabuleiro.movimentos_validos(peca)
         else:
             self.peca_selecionada = None
             self.movimentos_validos = {}
