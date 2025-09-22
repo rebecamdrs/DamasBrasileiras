@@ -5,7 +5,7 @@ from ui.telas import *
 janela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 pygame.display.set_caption('Damas')
 
-tabuleiro = pygame.Surface((LARGURA, ALTURA))
+tabuleiro = pygame.Surface((LARGURA_TABULEIRO, ALTURA_TABULEIRO))
 
 def main():
     relogio = pygame.time.Clock() 
@@ -16,7 +16,6 @@ def main():
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
-            
-            tela_inicial(janela, tabuleiro)
+        tela_inicial(janela, tabuleiro)
     pygame.quit()
 main()

@@ -7,7 +7,6 @@ class Tabuleiro:
         self.tabuleiro = []
         self.pecas_rosas, self.pecas_brancas = 12, 12
         self.damas_rosas, self.damas_brancas = 0, 0
-        self.atualiza_contagem_total()
         self.desenha_tabuleiro()
 
     def desenha_quadrados(self, janela):
@@ -49,19 +48,12 @@ class Tabuleiro:
                 peca.vira_dama()
                 if peca.cor == ROSA:
                     self.damas_rosas += 1
-                    self.pecas_rosas -= 1
                 else:
                     self.damas_brancas += 1
-                    self.pecas_brancas -= 1
-                self.atualiza_contagem_total()
     
     def obtem_peca(self, linha, coluna):
         return self.tabuleiro[linha][coluna]
     
-    def atualiza_contagem_total(self):
-        self.rosas_totais = self.pecas_rosas + self.damas_rosas
-        self.brancas_totais = self.pecas_brancas + self.damas_brancas
-
     def remover(self, pecas):
         for peca in pecas:
             self.tabuleiro[peca.linha][peca.coluna] = 0
@@ -76,16 +68,7 @@ class Tabuleiro:
                         self.pecas_brancas -= 1
                     else:
                         self.pecas_rosas -= 1
-        self.atualiza_contagem_total()
 
-    '''def remover(self, pecas):
-        for peca in pecas:
-            self.tabuleiro[peca.linha][peca.coluna] = 0
-            if peca.cor == BRANCO:
-                self.pecas_brancas -= 1
-            else:
-                self.pecas_rosas -= 1'''
-    
     def movimentos_validos(self, peca):
         """ Gerencia a obtenção de movimentos válidos.  """
         movimentos = {}

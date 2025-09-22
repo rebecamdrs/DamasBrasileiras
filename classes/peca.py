@@ -28,10 +28,10 @@ class Peca:
     def vira_dama(self):
         self.eh_dama = True
 
+    def __repr__(self):
+        return str(self.cor)
+
     def mover(self, linha, coluna):
         self.linha = linha
         self.coluna = coluna
         self.calcula_posicao()
-
-    def __repr__(self):
-        return str(self.cor)

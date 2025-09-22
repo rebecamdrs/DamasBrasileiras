@@ -4,13 +4,55 @@ from functions import *
 from .botao import Botao
 from classes.controlador import Controlador
 
-def tela_vencedor(tela, vencedor):
-    fechar_tela = False
+def pop_up(tela, rosas_restantes, brancas_restantes):
     clock = pygame.time.Clock()
-    while not fechar_tela:
+    mostrar = True
+    escolha = None  # "continuar" ou "sair"
+
+    while mostrar:
+        clock.tick(FPS)
+
+        # Desenha o pop-up
+        pygame.draw.rect(tela, BRANCO, (((TELA_LARGURA-500)//2), ((TELA_ALTURA-380)//2), 500, 380), 0, 10)
+        pygame.draw.rect(tela, AZUL_ESCURO, (((TELA_LARGURA-490)//2), ((TELA_ALTURA-370)//2), 490, 370), 3, 10)
+        tela.blit(ATENCAO, (((TELA_LARGURA-240)//2), (TELA_ALTURA-300)//2))
+
+        texto1 = LETRA_PEQUENA.render('TEM CERTEZA QUE QUER DESISTIR DO JOGO?', True, AZUL_ESCURO)
+        texto2 = LETRA_PEQUENA.render('VOCÊ PERDERÁ TODO O SEU PROGRESSO.', True, AZUL_ESCURO)
+        texto3 = LETRA_REGULAR.render('PLACAR ATUAL', True, AZUL_ESCURO)
+        texto4 = LETRA_REGULAR.render(f'ROSA: {rosas_restantes}    BRANCO: {brancas_restantes}', True, AZUL_ESCURO)
+
+        tela.blit(texto1, (((TELA_LARGURA-texto1.get_width())//2), ((TELA_ALTURA-100)//2)))
+        tela.blit(texto2, (((TELA_LARGURA-texto2.get_width())//2), ((TELA_ALTURA-60)//2)))
+        tela.blit(texto3, (((TELA_LARGURA-texto3.get_width())//2), ((TELA_ALTURA+20)//2)))
+        tela.blit(texto4, (((TELA_LARGURA-texto4.get_width())//2), ((TELA_ALTURA+60)//2)))
+
+        # Botões
+        rect_continuar = tela.blit(BOTAO_CONTINUAR, (((TELA_LARGURA+50-(BOTAO_CONTINUAR.get_width()-BOTAO_SAIR_2.get_width()))//2), ((TELA_ALTURA+160)//2)))
+        rect_sair = tela.blit(BOTAO_SAIR_2, (((TELA_LARGURA-50-(BOTAO_CONTINUAR.get_width()+BOTAO_SAIR_2.get_width()))//2), ((TELA_ALTURA+160)//2)))
+
+        # Eventos
         for evento in pygame.event.get():
-            if evento.type == pygame.KEYDOWN:
-                fechar_tela = True
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if rect_continuar.collidepoint(pos):
+                    mostrar = False
+                    escolha = "continuar"
+                if rect_sair.collidepoint(pos):
+                    mostrar = False
+                    escolha = "sair"
+
+        pygame.display.update()
+
+    return escolha
+
+
+def tela_vencedor(tela, vencedor):
+    clock = pygame.time.Clock()
+
+    fechar_tela = False
+    while not fechar_tela:
+        clock.tick(FPS)
 
         # Definir cor da tela com base no resultado
         if vencedor == ROSA:
@@ -38,15 +80,18 @@ def tela_vencedor(tela, vencedor):
             # Estrelas
             tela.blit(ESTRELAS, (TELA_LARGURA//2 - ESTRELAS.get_width()//2, (TELA_ALTURA//2 - 60) - ESTRELAS.get_height()//2))
             # Texto sair
-            texto_sair = LETRA_PEQUENA.render('CLIQUE EM QUALQUER TECLA PARA VOLTAR AO MENU.', True, BRANCO)
+            texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "M" PARA VOLTAR AO MENU.', True, BRANCO)
             tela.blit(texto_sair, (TELA_LARGURA//2 - texto_sair.get_width()//2, (TELA_ALTURA//2 + 85) - texto_sair.get_height()//2))
         else:
             tela.blit(render_texto, (TELA_LARGURA//2 - render_texto.get_width()//2, TELA_ALTURA//2 - render_texto.get_height()//2))
             # Texto sair
-            texto_sair = LETRA_PEQUENA.render('CLIQUE EM QUALQUER TECLA PARA VOLTAR AO MENU.', True, BRANCO)
+            texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "M" PARA VOLTAR AO MENU.', True, BRANCO)
             tela.blit(texto_sair, (TELA_LARGURA//2 - texto_sair.get_width()//2, (TELA_ALTURA//2 + 50) - texto_sair.get_height()//2))
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_m:
+                fechar_tela = True
                 
-        clock.tick(FPS)
         pygame.display.update()
 
 def tela_jogo(tela, tabuleiro):
@@ -56,29 +101,16 @@ def tela_jogo(tela, tabuleiro):
     
     fechar_tela = False
     while not fechar_tela:
-        # Voltar ao menu ou sair
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                fechar_tela = True
-                pygame.quit()
-            if evento.type == pygame.MOUSEBUTTONDOWN:
-                posicao = pygame.mouse.get_pos()
-                resultado = obtem_clique(posicao, (LARGURA, ALTURA), offset=(101, 100))
-                if resultado != None:
-                    linha, coluna = resultado
-                    controlador.gerencia_clique(linha, coluna)
-                else:
-                    pass # Clique fora do tabuleiro pode ignora
-
+        clock.tick(FPS)
 
         # Background e Tabuleiro
         tela.blit(BG_TELA_JOGO, (0, 0))
         tela.blit(tabuleiro, rect)
 
-        # Textos
         rosas_restantes = controlador.tabuleiro.pecas_rosas
         brancas_restantes = controlador.tabuleiro.pecas_brancas
-        
+
+        # Textos
         pontuacao_placar(rosas_restantes, brancas_restantes, tela)
         cor = controlador.turno
         turno(tela, cor)
@@ -87,9 +119,31 @@ def tela_jogo(tela, tabuleiro):
         if controlador.vencedor is not None:
             tela_vencedor(tela, controlador.vencedor)
             return
+        
+        # Voltar ao menu ou sair
+        for evento in pygame.event.get():
+            '''if evento.type == pygame.QUIT:
+                pop_up(tela, rosas_restantes, brancas_restantes)
+                return '''
+            
+            # CHATGPT
+            if evento.type == pygame.QUIT:
+                escolha = pop_up(tela, rosas_restantes, brancas_restantes)
+                if escolha == "sair":
+                    fechar_tela = True  # sai do jogo
+                # se for "continuar", não faz nada e volta ao loop normal
+
+            
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                posicao = pygame.mouse.get_pos()
+                resultado = obtem_clique(posicao, (LARGURA_TABULEIRO, ALTURA_TABULEIRO), offset=(101, 100))
+                if resultado != None:
+                    linha, coluna = resultado
+                    controlador.gerencia_clique(linha, coluna)
+                else:
+                    pass # Clique fora do tabuleiro pode ignora
 
         controlador.atualiza_jogo()
-        clock.tick(FPS)
         pygame.display.update()
 
 def tela_regras(tela):

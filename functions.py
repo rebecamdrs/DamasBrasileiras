@@ -47,8 +47,8 @@ def turno(tela, cor):
         turno = 'BRANCO'
     else:
         turno = 'ROSA'
-    base_turno = pygame.Rect(740, 265, 30, 100) # base para centralizar
+    base_turno = pygame.Rect(742, 265, 30, 100) # base para centralizar
     texto_turno = LETRA_GRANDE.render(turno, True, cor) # texto
     rect_turno = texto_turno.get_rect(center=base_turno.center) # base para movimentar o texto e centralizar na base
-    tela.blit(label_turno, (700, 270)) 
+    tela.blit(label_turno, (710, 270)) 
     tela.blit(texto_turno, rect_turno) 
