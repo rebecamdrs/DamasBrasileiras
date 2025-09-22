@@ -6,6 +6,7 @@ from classes.controlador import Controlador
 
 def tela_vencedor(tela, vencedor):
     fechar_tela = False
+    clock = pygame.time.Clock()
     while not fechar_tela:
         for evento in pygame.event.get():
             if evento.type == pygame.KEYDOWN:
@@ -45,6 +46,7 @@ def tela_vencedor(tela, vencedor):
             texto_sair = LETRA_PEQUENA.render('CLIQUE EM QUALQUER TECLA PARA VOLTAR AO MENU.', True, BRANCO)
             tela.blit(texto_sair, (TELA_LARGURA//2 - texto_sair.get_width()//2, (TELA_ALTURA//2 + 50) - texto_sair.get_height()//2))
                 
+        clock.tick(FPS)
         pygame.display.update()
 
 def tela_jogo(tela, tabuleiro):
