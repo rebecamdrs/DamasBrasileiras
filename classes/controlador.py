@@ -14,8 +14,17 @@ class Controlador:
         self.turno = BRANCO
         self.movimentos_validos = {}
 
-    def resetar_jogo(self):
-        self._init()
+    def atualiza_jogo(self):
+        self.tabuleiro.monta_tabuleiro(self.janela)
+        if self.peca_selecionada:
+            self.desenha_selecao(self.janela)
+            self.desenha_movimentos_validos(self.janela)
+        
+        if self.vencedor is not None:
+            self.tela_vencedor(self.vencedor)
+        else:
+            self.vencedor = self.verifica_vitoria()
+        pygame.display.update()
 
     def verifica_vitoria(self):
         if self.tabuleiro.pecas_brancas == 0 and self.tabuleiro.damas_brancas == 0:
@@ -26,15 +35,8 @@ class Controlador:
             return 'EMPATE'
         return None
 
-    def atualiza_jogo(self):
-        self.tabuleiro.monta_tabuleiro(self.janela)
-        if self.peca_selecionada:
-            self.desenha_selecao(self.janela)
-            self.desenha_movimentos_validos(self.janela)
-        
-        if self.vencedor is None:
-            self.vencedor = self.verifica_vitoria()
-        pygame.display.update()
+    def resetar_jogo(self):
+        self._init()
 
     def _mover(self, linha, coluna):
         peca_mover = self.peca_selecionada
