@@ -92,6 +92,9 @@ def tela_vencedor(tela, vencedor):
                 
         pygame.display.update()
 
+def tela_empate(tela):
+    tela_vencedor(tela, None)
+
 def tela_jogo(tela, tabuleiro):
     clock = pygame.time.Clock()
     rect = tabuleiro.get_rect(topleft=(101, 100))

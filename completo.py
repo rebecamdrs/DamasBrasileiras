@@ -12,6 +12,7 @@ BRANCO = (255, 255, 255)
 BRANCO_OFF = (242, 242, 242)
 ROSA = (240, 72, 164)
 AZUL_CLARO = (130, 229, 223)
+VERMELHO = (255, 0, 0)
 
 ''' DIMENSÕES '''
 # Tabuleiro
@@ -28,11 +29,6 @@ PECA_ROSA = pygame.transform.scale(pygame.image.load('assets/images/peca_rosa.pn
 PECA_BRANCA = pygame.transform.scale(pygame.image.load('assets/images/peca_branca.png'), (36, 36))
 DAMA_ROSA = pygame.transform.scale(pygame.image.load('assets/images/dama_rosa.png'), (36, 36))
 DAMA_BRANCA = pygame.transform.scale(pygame.image.load('assets/images/dama_branca.png'), (36, 36))
-
-# Botões
-BOTAO_JOGAR = pygame.image.load('assets/images/botao_jogar.png')
-BOTAO_REGRAS = pygame.image.load('assets/images/botao_regras.png')
-BOTAO_SAIR = pygame.image.load('assets/images/botao_sair.png')
 
 class Peca:
     def __init__(self, linha, coluna, cor):
@@ -75,6 +71,8 @@ class Tabuleiro:
         self.tabuleiro = []
         self.pecas_rosas, self.pecas_brancas = 12, 12
         self.damas_rosas, self.damas_brancas = 0, 0
+        self.direcoes = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        self.atualiza_contagem_total()
         self.desenha_tabuleiro()
 
     def desenha_quadrados(self, janela):
@@ -108,6 +106,10 @@ class Tabuleiro:
                 if peca != 0:
                     peca.cria_peca(janela)
 
+    def atualiza_contagem_total(self):
+        self.rosas_totais = self.pecas_rosas + self.damas_rosas
+        self.brancas_totais = self.pecas_brancas + self.damas_brancas
+
     def mover(self, peca, linha, coluna):
         self.tabuleiro[peca.linha][peca.coluna], self.tabuleiro[linha][coluna] = self.tabuleiro[linha][coluna], self.tabuleiro[peca.linha][peca.coluna]
         peca.mover(linha, coluna)
@@ -117,8 +119,11 @@ class Tabuleiro:
                 peca.vira_dama()
                 if peca.cor == ROSA:
                     self.damas_rosas += 1
+                    self.pecas_rosas -= 1
                 else:
                     self.damas_brancas += 1
+                    self.pecas_brancas -= 1
+                self.atualiza_contagem_total()
     
     def obtem_peca(self, linha, coluna):
         return self.tabuleiro[linha][coluna]
@@ -137,7 +142,10 @@ class Tabuleiro:
                         self.pecas_brancas -= 1
                     else:
                         self.pecas_rosas -= 1
-        print(f'Peças brancas: {self.pecas_brancas}; Peças rosas: {self.pecas_rosas}; Damas brancas: {self.damas_brancas}; Damas rosas: {self.damas_rosas}\n')
+        self.atualiza_contagem_total()
+        
+        print(f'Peças brancas: {self.pecas_brancas}; Peças rosas: {self.pecas_rosas}; Damas brancas: {self.damas_brancas}; Damas rosas: {self.damas_rosas}')
+        print(f'BRANCAS TOTAIS: {self.brancas_totais}; ROSAS TOTAIS:{self.rosas_totais}\n')
         
     def movimentos_validos(self, peca):
         """ Gerencia a obtenção de movimentos válidos.  """
@@ -159,14 +167,8 @@ class Tabuleiro:
     def _movimentos_peca(self, peca):
         """ Calcula os movimentos de uma peça que não é Dama """
         movimentos = {}
-        # Define a direção do movimento com base na cor da peça
-        if peca.cor == BRANCO:
-            direcao_linha = -1
-        else:
-            direcao_linha = 1
         
-        # Verifica as diagonais
-        for direcao_coluna in [-1, 1]:
+        for direcao_linha, direcao_coluna in self.direcoes:
             linha_alvo = peca.linha + direcao_linha
             coluna_alvo = peca.coluna + direcao_coluna
 
@@ -174,9 +176,16 @@ class Tabuleiro:
             if 0 <= linha_alvo < LINHAS and 0 <= coluna_alvo < COLUNAS:
                 peca_caminho = self.tabuleiro[linha_alvo][coluna_alvo]
 
-                # A casa está vazia, movimento permitido
                 if peca_caminho == 0:
-                    movimentos[(linha_alvo, coluna_alvo)] = []
+                    movimento_valido = False
+
+                    if peca.cor == BRANCO and direcao_linha == -1:
+                        movimento_valido = True
+                    elif peca.cor == ROSA and direcao_linha == 1:
+                        movimento_valido = True
+                    
+                    if movimento_valido:
+                        movimentos[(linha_alvo, coluna_alvo)] = []
 
                 # A casa tem uma peça inimiga, potencial captura
                 elif peca_caminho.cor != peca.cor: 
@@ -191,9 +200,8 @@ class Tabuleiro:
     def _movimentos_dama(self, peca):
         """ Calcula os movimentos para uma Dama """
         movimentos = {}
-        direcoes = [(-1, -1), (-1, 1), (1, -1), (1,1)]
 
-        for d_linha, d_coluna in direcoes:
+        for d_linha, d_coluna in self.direcoes:
             movimentos.update(self._verifica_diagonal(peca, d_linha, d_coluna))
         return movimentos
 
@@ -226,7 +234,7 @@ class Tabuleiro:
             # Encontrou uma peça inimiga
             else:
                 if peca_capturada:
-                    break # AJUSTAR PARA CAPTURAR MAIS DE UMA PEÇA
+                    break 
                 else:
                     peca_capturada = peca_caminho
         return movimentos_diagonal
@@ -235,32 +243,66 @@ class Controlador:
     def __init__(self, janela):
         self._init()
         self.janela = janela
-        self.vencedor = None
 
     def _init(self): # função privada
         self.peca_selecionada = None
         self.tabuleiro = Tabuleiro()
         self.turno = BRANCO
         self.movimentos_validos = {}
+        self.capturas_obrigatorias = {}
+        # Variáveis de estado do jogo
+        self.vencedor = None
+        self.empate = False
+        # Variáveis para seleção inválida
+        self.peca_invalida = None
+        self.tempo_invalido = 0
+        # Contador para regra de empate
+        self.contador_lances_branco = 0
+        self.contador_lances_rosa = 0
+        self._verificar_capturas()
 
     def verifica_vitoria(self):
-        if self.tabuleiro.pecas_brancas == 0 and self.tabuleiro.damas_brancas == 0:
+        # Vitória por captura de todas as peças
+        if self.tabuleiro.brancas_totais == 0:
             return ROSA
-        elif self.tabuleiro.pecas_rosas == 0 and self.tabuleiro.damas_rosas == 0:
+        elif self.tabuleiro.rosas_totais == 0:
             return BRANCO
-        # opcao para sem saida?
+        
+        # Vitória por bloqueio
+        if not self._verifica_movimentos():
+            if self.turno == BRANCO:
+                return ROSA
+            else:
+                return BRANCO
+                
         return None
-
+    
+    def verifica_empate(self):
+        # Regra do 20 Lances
+        if self.contador_lances_branco >= 20 and self.contador_lances_rosa >= 20:
+            return True
+        return False
+    
     def atualiza_jogo(self):
         self.tabuleiro.monta_tabuleiro(self.janela)
+        self.desenha_selecao_invalida(self.janela)
+
         if self.peca_selecionada:
                 self.desenha_selecao(self.janela)
                 self.desenha_movimentos_validos(self.janela)
                 
+        if self.vencedor is None and not self.empate:
+            vencedor_encontrado = self.verifica_vitoria()
+            if vencedor_encontrado:
+                self.vencedor = vencedor_encontrado
+            elif self.verifica_empate():
+                self.empate = True
+
         if self.vencedor is not None:
             self.tela_vencedor(self.vencedor)
-        else:
-            self.vencedor = self.verifica_vitoria()
+        elif self.empate:
+            self.tela_empate()
+                
         pygame.display.update()
 
     def resetar_jogo(self):
@@ -268,15 +310,70 @@ class Controlador:
 
     def _mover(self, linha, coluna):
         peca_mover = self.peca_selecionada
+
         if peca_mover and (linha, coluna) in self.movimentos_validos:
             pecas_capturadas = self.movimentos_validos[(linha, coluna)]
             self.tabuleiro.mover(peca_mover, linha, coluna)
+
+            # Se houve captura, remove a peça e em seguida procura novas capturas a partir da nova posição
             if pecas_capturadas:
                 self.tabuleiro.remover(pecas_capturadas)
-            self.mudar_turno()
-        else:
-            return False
-        return True
+                novos_movimentos = self.tabuleiro.movimentos_validos(peca_mover)
+
+                novas_capturas = {}
+                for posicao, lista_pecas in novos_movimentos.items():
+                    if lista_pecas:
+                        novas_capturas[posicao] = lista_pecas 
+                
+                # Se há nova captura, o turno não muda
+                if novas_capturas:
+                    self.movimentos_validos = novas_capturas
+                # Se não, muda o turno 
+                else:
+                    self.mudar_turno()
+            # Se foi apenas uma captura muda o turno
+            else:
+                self.mudar_turno()
+
+            # Regra dos 20 Lances
+            if pecas_capturadas or not peca_mover.eh_dama:
+                self.contador_lances_branco = 0
+                self.contador_lances_rosa = 0
+            elif peca_mover.eh_dama and not pecas_capturadas:
+                if peca_mover.cor == BRANCO:
+                    self.contador_lances_branco += 1
+                else:
+                    self.contador_lances_rosa += 1
+
+            return True # O movimento foi válido
+        return False # O movimento era inválido
+
+    def _verificar_capturas(self):
+        """ Verifica o tabuleiro inteiro para encontrar todas as capturas obrigatórias do turno atual """
+        self.capturas_obrigatorias = {}
+
+        # Percorre por cada casa do tabuleiro
+        for linha in range(LINHAS):
+            for coluna in range(COLUNAS):
+                peca = self.tabuleiro.obtem_peca(linha, coluna)
+
+                # Verifica se a peça pertence ao jogador da vez
+                if peca != 0 and peca.cor == self.turno:
+                    movimentos_da_peca = self.tabuleiro.movimentos_validos(peca)
+
+                    if any(movimentos_da_peca.values()):
+                        self.capturas_obrigatorias[peca] = movimentos_da_peca
+
+    def _verifica_movimentos(self):
+        """ Verifica se o jogador do turno atual tem algum movimento válido """
+        for linha in range(LINHAS):
+            for coluna in range(COLUNAS):
+                peca = self.tabuleiro.obtem_peca(linha, coluna)
+
+                if peca != 0 and peca.cor == self.turno:
+                    if self.tabuleiro.movimentos_validos(peca):
+                        return True # Encontrou movimentos possíveis
+        return False # Nenhuma peça tem movimentos
 
     def mudar_turno(self):
         self.peca_selecionada = None
@@ -286,20 +383,41 @@ class Controlador:
             self.turno = ROSA
         else:
             self.turno = BRANCO
+        self._verificar_capturas()
 
     def gerencia_clique(self, linha, coluna):
+        # Se o clique for em um movimento válido, executa o movimento
         if (linha, coluna) in self.movimentos_validos:
             self._mover(linha, coluna)
             return
         
         peca = self.tabuleiro.obtem_peca(linha, coluna)
+
+        # Se há captura obrigatória e o jogador clica em outra peça que seja sua
+        if self.capturas_obrigatorias and peca not in self.capturas_obrigatorias:
+            if peca != 0:
+                self._marcar_invalido(peca)
+            return
+
+        # Se o jogador clica em uma de suas peças
         if peca != 0 and peca.cor == self.turno:
-            self.peca_selecionada = peca
-            self.movimentos_validos = self.tabuleiro.movimentos_validos(peca)
-        else:
-            self.peca_selecionada = None
-            self.movimentos_validos = {}
+            movimentos_possiveis = self.tabuleiro.movimentos_validos(peca)
+            
+            if movimentos_possiveis: # Tem movimentos
+                self.peca_selecionada = peca
+                self.movimentos_validos = movimentos_possiveis
+                self.peca_invalida = None
+            else: # Não tem movimentos
+                self._marcar_invalido(peca)
+        else: # Se clica em uma peça do inimigo
+            self._marcar_invalido(peca)
     
+    def _marcar_invalido(self, peca):
+        self.peca_invalida = peca
+        self.tempo_invalido = pygame.time.get_ticks()
+        self.peca_selecionada = None
+        self.movimentos_validos = {}
+
     def desenha_selecao(self, janela):
         if self.peca_selecionada:
             linha, coluna = self.peca_selecionada.linha, self.peca_selecionada.coluna
@@ -308,6 +426,22 @@ class Controlador:
             raio_externo = TAMANHO_QUADRADO  // 2
             pygame.draw.circle(janela, AZUL_CLARO, (x + raio_externo, y + raio_externo), raio_externo - 3, 4)
 
+    def desenha_selecao_invalida(self, janela):
+        """ Desenha um círculo vermelho ao redor de uma peça selecionada invalidamente """
+        if self.peca_invalida:
+            duracao_ms = 500  # O círculo aparecerá por 0.5 segundos
+            agora = pygame.time.get_ticks()
+
+            if agora - self.tempo_invalido < duracao_ms:
+                linha, coluna = self.peca_invalida.linha, self.peca_invalida.coluna
+                x = coluna * TAMANHO_QUADRADO
+                y = linha * TAMANHO_QUADRADO
+                raio_externo = TAMANHO_QUADRADO // 2
+                pygame.draw.circle(janela, VERMELHO, (x + raio_externo, y + raio_externo), raio_externo - 3, 4)
+            else:
+                # Limpa a variável após o tempo expirar
+                self.peca_invalida = None
+
     def desenha_movimentos_validos(self, janela):
         for movimento in self.movimentos_validos:
             linha, coluna = movimento
@@ -315,7 +449,7 @@ class Controlador:
             y = linha * TAMANHO_QUADRADO
             pygame.draw.rect(janela, AZUL_CLARO, (x, y, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
     
-    # FUNCAO APENAS PARA TESTE
+    # FUNCOES APENAS PARA TESTE
     def tela_vencedor(self, vencedor):
         self.janela.fill(AZUL_CLARO)
         fonte = pygame.font.SysFont('Montserrat', 40)
@@ -324,6 +458,13 @@ class Controlador:
         else:
             texto = 'ROSA VENCEU!'
         render_texto = fonte.render(texto, True, vencedor)
+        self.janela.blit(render_texto, (LARGURA//2 - render_texto.get_width()//2, ALTURA//2 - render_texto.get_height()//2))
+
+    def tela_empate(self):
+        self.janela.fill(AZUL_CLARO)
+        fonte = pygame.font.SysFont('Montserrat', 40)
+        texto = 'EMPATE'
+        render_texto = fonte.render(texto, True, CINZA_CLARO)
         self.janela.blit(render_texto, (LARGURA//2 - render_texto.get_width()//2, ALTURA//2 - render_texto.get_height()//2))
 
 def obtem_clique(pos):
@@ -346,8 +487,6 @@ def main():
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
-            
-            #tela_inicial(janela)
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 posicao = pygame.mouse.get_pos()
