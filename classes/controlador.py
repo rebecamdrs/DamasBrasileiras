@@ -54,17 +54,11 @@ class Controlador:
             self.desenha_selecao(self.janela)
             self.desenha_movimentos_validos(self.janela)
         
-        if self.vencedor is not None and not self.empate:
-            vencedor_encontrado = self.verifica_vitoria()
-            if vencedor_encontrado:
-                self.vencedor = vencedor_encontrado
-            elif self.verifica_empate():
+        if self.vencedor is None and not self.empate:
+            self.vencedor = self.verifica_vitoria()
+            if self.verifica_empate():
                 self.empate = True
-            
-        if self.vencedor is not None:
-            self.tela_vencedor(self.vencedor)
-        elif self.empate:
-            self.tela_empate()
+                self.vencedor = 'EMPATE'
         
         pygame.display.update()
 
