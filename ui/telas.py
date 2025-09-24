@@ -45,33 +45,28 @@ def pop_up(tela, rosas_restantes, brancas_restantes):
         pygame.display.update()
     return escolha
 
-def tela_vencedor(tela, vencedor):
+def tela_fim(tela, vencedor):
     clock = pygame.time.Clock()
-
     fechar_tela = False
+
     while not fechar_tela:
         clock.tick(FPS)
 
-        # Definir cor da tela com base no resultado
-        if vencedor == ROSA:
-            cor_tela = ROSA
-        elif vencedor == BRANCO:
+        # Definir cor da tela e o texto com base no resultado
+        if vencedor == BRANCO:
             cor_tela = BRANCO
+            texto = 'BRANCO VENCEU!'
+        elif vencedor == ROSA:
+            cor_tela = ROSA
+            texto = 'ROSA VENCEU!'
         else:
             cor_tela = AZUL_CLARO
+            texto = 'EMPATE'
         tela.fill(cor_tela)
+        render_texto = PRINCIPAL.render(texto, True, BRANCO)
 
         # Retangulo azul escuro
         pygame.draw.rect(tela, AZUL_ESCURO, (0, ((TELA_ALTURA-350)//2), TELA_LARGURA, 350))
-
-        # Texto de vencedor
-        if vencedor == BRANCO:
-            texto = 'BRANCO VENCEU!'
-        elif vencedor == ROSA:
-            texto = 'ROSA VENCEU!'
-        else:
-            texto = 'EMPATE'
-        render_texto = PRINCIPAL.render(texto, True, BRANCO)
 
         if vencedor == ROSA or vencedor == BRANCO:
             tela.blit(render_texto, (TELA_LARGURA//2 - render_texto.get_width()//2, (TELA_ALTURA//2 + 25) - render_texto.get_height()//2))
@@ -91,9 +86,6 @@ def tela_vencedor(tela, vencedor):
                 fechar_tela = True
                 
         pygame.display.update()
-
-def tela_empate(tela):
-    tela_vencedor(tela, None)
 
 def tela_jogo(tela, tabuleiro):
     clock = pygame.time.Clock()
@@ -116,9 +108,13 @@ def tela_jogo(tela, tabuleiro):
         cor = controlador.turno
         turno(tela, cor)
 
+        # Texto para pausar
+        texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "P" PARA PAUSAR O JOGO.', True, BRANCO)
+        tela.blit(texto_sair, (TELA_LARGURA//2 - texto_sair.get_width()//2, (TELA_ALTURA - 30) - texto_sair.get_height()//2))
+
         # Verifica se o jogo terminou
         if controlador.vencedor is not None:
-            tela_vencedor(tela, controlador.vencedor)
+            tela_fim(tela, controlador.vencedor)
             return
         
         # Voltar ao menu ou sair
@@ -137,8 +133,45 @@ def tela_jogo(tela, tabuleiro):
                     controlador.gerencia_clique(linha, coluna)
                 else:
                     pass # Clique fora do tabuleiro pode ignora
-
+            
+            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_p:
+                print = tela.copy() # Salva o frame atual do jogo
+                pausa = tela_pause(tela, print, rosas_restantes, brancas_restantes) # Pausa o jogo
+                if not pausa:
+                    return
+                
         controlador.atualiza_jogo()
+        pygame.display.update()
+
+def tela_pause(tela, print, rosas_restantes, brancas_restantes):
+    clock = pygame.time.Clock()
+
+    while True:
+        clock.tick(FPS)
+        tela.blit(print, (0, 0)) # Tela de fundo(jogo)
+        
+        # Sobreposição
+        sobreposicao = pygame.Surface((TELA_LARGURA, TELA_ALTURA), pygame.SRCALPHA)
+        sobreposicao.fill((0, 0, 0, 200))
+        tela.blit(sobreposicao, (0 , 0))
+        
+        # Texto "JOGO PAUSADO"
+        texto_pausado = PRINCIPAL.render('JOGO PAUSADO', True, ROSA)     
+        tela.blit(texto_pausado, (TELA_LARGURA//2 - texto_pausado.get_width()//2, TELA_ALTURA//2 - texto_pausado.get_height()//2))
+
+        # Texto voltar ao jogo
+        texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "P" PARA VOLTAR AO JOGO.', True, BRANCO)
+        tela.blit(texto_sair, (TELA_LARGURA//2 - texto_sair.get_width()//2, (TELA_ALTURA - 30) - texto_sair.get_height()//2))
+
+        for evento in pygame.event.get():
+            if evento.type == pygame.KEYDOWN and evento.key == pygame.K_p:
+                return True
+
+            if evento.type == pygame.QUIT:
+                escolha = pop_up(tela, rosas_restantes, brancas_restantes)
+                if escolha == "sair":
+                    return False
+                
         pygame.display.update()
 
 def tela_regras(tela):
@@ -186,4 +219,3 @@ def tela_inicial(tela, tabuleiro):
                 if botao_sair.verifica_posicao(posicao_mouse_menu):
                     rodando = False
         pygame.display.update()
-    pygame.quit()
