@@ -5,8 +5,10 @@ pygame.font.init()
 FPS = 60
 LETRA_REGULAR = pygame.font.Font('assets/font/Montserrat-Regular.ttf', 15)
 LETRA_PEQUENA = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 15)
+LETRA_MEDIA = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 18)
 LETRA_PLACAR = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 22)
 LETRA_GRANDE = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 24)
+LETRA_BIG = pygame.font.Font('assets/font/Montserrat-ExtraBold.ttf', 32)
 PRINCIPAL = pygame.font.Font('assets/font/CrunchChips.ttf', 76)
 
 ''' CORES '''
@@ -42,6 +44,7 @@ ATENCAO = pygame.transform.scale(pygame.image.load('assets/images/atencao.png'),
 
 # Estrelas
 ESTRELAS = pygame.transform.scale(pygame.image.load('assets/images/estrelas.png'), (198.78, 80.25))
+TIMER = pygame.transform.scale(pygame.image.load('assets/images/timer.png'), (150, 40))
 
 # Botões
 BOTAO_JOGAR = pygame.transform.scale(pygame.image.load('assets/images/botao_jogar.png'), (280, 62))
@@ -49,6 +52,8 @@ BOTAO_REGRAS = pygame.transform.scale(pygame.image.load('assets/images/botao_reg
 BOTAO_SAIR = pygame.transform.scale(pygame.image.load('assets/images/botao_sair.png'), (280, 65))
 BOTAO_CONTINUAR = pygame.transform.scale(pygame.image.load('assets/images/bt_continuar.png'), (156, 42))
 BOTAO_SAIR_2 = pygame.transform.scale(pygame.image.load('assets/images/bt_sair.png'), (156, 42))
+BOTAO_NORMAL = pygame.transform.scale(pygame.image.load('assets/images/botao_normal.png'), (280, 62))
+BOTAO_TEMPO = pygame.transform.scale(pygame.image.load('assets/images/botao_tempo.png'), (280, 62))
 
 # Backgrounds 
 BG_TELA_INICIAL = pygame.image.load('assets/images/bg_tela_inicial.png')

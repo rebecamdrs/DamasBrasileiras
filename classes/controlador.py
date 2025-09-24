@@ -13,12 +13,15 @@ class Controlador:
         self.turno = BRANCO
         self.movimentos_validos = {}
         self.capturas_obrigatorias = {}
+
         # Variáveis de estado do jogo
         self.vencedor = None
         self.empate = False
+
         # Variáveis para seleção inválida
         self.peca_invalida = None
         self.tempo_invalido = 0
+        
         # Contador para regra de empate
         self.contador_lances_branco = 0
         self.contador_lances_rosa = 0
