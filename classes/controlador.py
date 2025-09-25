@@ -3,7 +3,7 @@ from .tabuleiro import Tabuleiro
 from utils.config import *
 
 class Controlador:
-    """Classe que controla toda a mecânica do tabuleiro."""
+    """ Classe que controla toda a mecânica do tabuleiro. """
     def __init__(self, janela):
         self._init()
         self.janela = janela
@@ -29,7 +29,7 @@ class Controlador:
         self._verificar_capturas()
 
     def verifica_fim(self):
-        """Retorna o resultado da partida."""
+        """ Retorna o resultado da partida. """
         # Vitória por captura de todas as peças
         if self.tabuleiro.brancas_totais == 0:
             return ROSA
@@ -49,7 +49,7 @@ class Controlador:
         return None
 
     def atualiza_jogo(self):
-        """Atualiza o jogo a cada turno."""
+        """ Atualiza o jogo a cada turno. """
         self.tabuleiro.monta_tabuleiro(self.janela)
         self.desenha_selecao_invalida(self.janela)
 
@@ -63,7 +63,7 @@ class Controlador:
         pygame.display.update()
 
     def resetar_jogo(self):
-        """Reseta o jogo para as configurações iniciais."""
+        """ Reseta o jogo para as configurações iniciais. """
         self._init()
 
     def _mover(self, linha, coluna):
@@ -142,7 +142,7 @@ class Controlador:
         return False # Nenhuma peça tem movimentos
 
     def mudar_turno(self):
-        """Troca o turno atual e reseta os movimentos válidos e a peça selecionada."""
+        """ Troca o turno atual e reseta os movimentos válidos e a peça selecionada. """
         self.peca_selecionada = None
         self.movimentos_validos = {}
         if self.turno == BRANCO:
@@ -152,7 +152,7 @@ class Controlador:
         self._verificar_capturas()
 
     def gerencia_clique(self, linha, coluna):
-        """Verifica o clique em tal casa destino"""
+        """ Verifica o clique em tal casa destino """
         # Se o clique for em um movimento válido, executa o movimento
         if (linha, coluna) in self.movimentos_validos:
             self._mover(linha, coluna)
@@ -186,7 +186,7 @@ class Controlador:
         self.movimentos_validos = {}
     
     def desenha_selecao(self, janela):
-        """Desenha a borda na peça selecionada."""
+        """ Desenha a borda na peça selecionada. """
         if self.peca_selecionada:
             linha, coluna = self.peca_selecionada.linha, self.peca_selecionada.coluna
             x = coluna * TAMANHO_QUADRADO 
@@ -195,7 +195,7 @@ class Controlador:
             pygame.draw.circle(janela, AZUL_CLARO, (x + raio_externo, y + raio_externo), raio_externo - 3, 4)
 
     def desenha_selecao_invalida(self, janela):
-        """ Desenha a borda na peça selecionada invalidamente."""
+        """ Desenha a borda na peça selecionada invalidamente. """
         if self.peca_invalida:
             duracao_ms = 500 # O círculo aparacerá por 0.5s
             agora = pygame.time.get_ticks()
@@ -211,7 +211,7 @@ class Controlador:
                 self.peca_invalida = None
 
     def desenha_movimentos_validos(self, janela):
-        """Mostra no tabuleiro os movimentos válidos da peça selecionda, caso houver."""
+        """ Mostra no tabuleiro os movimentos válidos da peça selecionda, caso houver. """
         for movimento in self.movimentos_validos:
             linha, coluna = movimento
             x = coluna * TAMANHO_QUADRADO 

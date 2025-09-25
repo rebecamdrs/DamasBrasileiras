@@ -9,7 +9,7 @@ class Botao:
     def atualizar(self, tela):
         tela.blit(self.imagem, self.retangulo)
 
-    # verifica se o botão foi pressionado
+    # Verifica se o botão foi pressionado
     def verifica_posicao(self, posicao):
         if posicao[0] in range(self.retangulo.left, self.retangulo.right) and posicao[1] in range(self.retangulo.top, self.retangulo.bottom):
             return True

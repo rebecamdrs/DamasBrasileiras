@@ -1,7 +1,7 @@
 from utils.config import *
 
 class Peca:
-    """Classe para criação das peças do tabuleiro."""
+    """ Classe para criação das peças do tabuleiro. """
     def __init__(self, linha, coluna, cor):
         self.linha = linha
         self.coluna = coluna
