@@ -1,11 +1,9 @@
-from config import *
+from utils.config import *
 import datetime
     
 def obtem_clique(posicao, limites_tabuleiro, offset=(0, 0)):
-    """
-    Retorna a posição do clique no tabuleiro.
-    Caso for fora do seu perímetrom retorna None.
-    """
+    """Retorna a posição do clique no tabuleiro.
+    Caso for fora do seu perímetro, retorna None."""
     largura, altura = limites_tabuleiro
     x, y = posicao
     offset_x, offset_y = offset
@@ -19,8 +17,6 @@ def obtem_clique(posicao, limites_tabuleiro, offset=(0, 0)):
     return None
 
 def formatar_tempo(segundos_restantes):
-    """
-    Formata o tempo restante de segundos para o formato H:MM:SS.
-    """
+    """Formata o tempo restante de segundos para o formato H:MM:SS."""
     tempo = datetime.timedelta(seconds=segundos_restantes)
     return str(tempo)

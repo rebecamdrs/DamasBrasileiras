@@ -1,4 +1,5 @@
 class Botao:
+    """Classe com atributos dos botões do menu."""
     def __init__(self, imagem, posicao):
         self.imagem = imagem
         self.x = posicao[0]
