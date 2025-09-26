@@ -12,10 +12,6 @@ def main():
     rodando = True
     while rodando:
         relogio.tick(FPS)
-        # Fecha o programa
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                rodando = False
-        tela_inicial(janela, tabuleiro)
+        rodando = tela_inicial(janela, tabuleiro)
     pygame.quit()
 main()

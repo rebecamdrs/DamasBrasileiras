@@ -13,18 +13,21 @@ class Controlador:
         self.turno = BRANCO
         self.movimentos_validos = {}
         self.capturas_obrigatorias = {}
+
         # Variáveis de estado do jogo
         self.vencedor = None
         self.empate = False
+
         # Variáveis para seleção inválida
         self.peca_invalida = None
         self.tempo_invalido = 0
+        
         # Contador para regra de empate
         self.contador_lances_branco = 0
         self.contador_lances_rosa = 0
         self._verificar_capturas()
 
-    def verifica_vitoria(self):
+    def verifica_fim(self):
         # Vitória por captura de todas as peças
         if self.tabuleiro.brancas_totais == 0:
             return ROSA
@@ -38,13 +41,11 @@ class Controlador:
             else:
                 return BRANCO
             
-        return None
-    
-    def verifica_empate(self):
-        # Regra dos 20 Lances
+        # Empate pela regra dos 20 lances
         if self.contador_lances_branco >= 20 and self.contador_lances_rosa >= 20:
-            return True
-        return False
+            return 'EMPATE'
+        
+        return None
 
     def atualiza_jogo(self):
         self.tabuleiro.monta_tabuleiro(self.janela)
@@ -54,11 +55,8 @@ class Controlador:
             self.desenha_selecao(self.janela)
             self.desenha_movimentos_validos(self.janela)
         
-        if self.vencedor is None and not self.empate:
-            self.vencedor = self.verifica_vitoria()
-            if self.verifica_empate():
-                self.empate = True
-                self.vencedor = 'EMPATE'
+        if self.vencedor is None:
+            self.vencedor = self.verifica_fim()
         
         pygame.display.update()
 
