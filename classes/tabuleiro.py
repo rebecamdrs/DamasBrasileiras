@@ -3,7 +3,7 @@ from utils.config import *
 from .peca import Peca
 
 class Tabuleiro:
-    """ Classe que cria o tabuleiro e guarda seus dados atuais. """
+    """Classe que cria o tabuleiro e guarda seus dados atuais."""
     def __init__(self):
         self.tabuleiro = []
         self.pecas_rosas, self.pecas_brancas = 12, 12
@@ -13,18 +13,18 @@ class Tabuleiro:
         self.desenha_tabuleiro()
 
     def desenha_quadrados(self, janela):
-        """ Desenha as casas brancas do tabuleiro. """
+        """Desenha as casas brancas do tabuleiro."""
         janela.fill(CINZA)
         for linha in range(LINHAS):
             for coluna in range(linha % 2, COLUNAS, 2):
                 pygame.draw.rect(janela, BRANCO, (linha * TAMANHO_QUADRADO, coluna * TAMANHO_QUADRADO, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
 
     def desenha_tabuleiro(self):
-        """ Cria a estrutura do tabuleiro. """
+        """Cria a estrutura do tabuleiro."""
         for linha in range(LINHAS):
             self.tabuleiro.append([])
             for coluna in range(COLUNAS):
-                # Condição para que as peças sejam colocadas nas casas pretas
+                # condição para que as peças sejam colocadas nas casas pretas
                 if coluna % 2 == ((linha + 1) % 2):
                     if linha < 3:
                         self.tabuleiro[linha].append(Peca(linha, coluna, ROSA))
@@ -32,12 +32,12 @@ class Tabuleiro:
                         self.tabuleiro[linha].append(Peca(linha, coluna, BRANCO))
                     else:
                         self.tabuleiro[linha].append(0)
-                # Casas vazias do tabuleiro ficam 0
+                # casas "brancas" do tabuleiro ficam vazias
                 else: 
                     self.tabuleiro[linha].append(0)
 
     def monta_tabuleiro(self, janela):
-        """ Mostra o tabuleiro na tela: casas e peças. """
+        """Mostra o tabuleiro na tela: casas e peças."""
         self.desenha_quadrados(janela)
         for linha in range(LINHAS):
             for coluna in range(COLUNAS):
@@ -46,13 +46,13 @@ class Tabuleiro:
                     peca.cria_peca(janela)
     
     def atualiza_contagem_total(self):
-        """ Atualiza a contagem total de peças do tabuleiro após cada turno.
-        - Peças normais + damas """
+        """Atualiza a contagem total de peças do tabuleiro após cada turno.
+        - Peças normais + damas"""
         self.rosas_totais = self.pecas_rosas + self.damas_rosas
         self.brancas_totais = self.pecas_brancas + self.damas_brancas
 
     def mover(self, peca, linha, coluna):
-        """ Move uma peça para a casa destino selecionada. Caso a peça seja movida para a primeira/última linha, é analisado a condição de virar dama. """
+        """Move uma peça para a casa destino selecionada. Caso a peça seja movida para a primeira/última linha, é analisado a condição de virar dama."""
         self.tabuleiro[peca.linha][peca.coluna], self.tabuleiro[linha][coluna] = self.tabuleiro[linha][coluna], self.tabuleiro[peca.linha][peca.coluna]
         peca.mover(linha, coluna)
         if (linha == LINHAS - 1 and peca.cor == ROSA) or (linha == 0 and peca.cor == BRANCO):
@@ -67,11 +67,11 @@ class Tabuleiro:
                 self.atualiza_contagem_total()
     
     def obtem_peca(self, linha, coluna):
-        """ Retorna a peça do tabuleiro que está na posição dada. """
+        """Retorna a peça do tabuleiro que está na posição dada."""
         return self.tabuleiro[linha][coluna]
 
     def remover(self, pecas):
-        """ Remove a(s) peça(s) fornecidas do tabuleiro. """
+        """Remove a(s) peça(s) fornecidas do tabuleiro."""
         for peca in pecas:
             self.tabuleiro[peca.linha][peca.coluna] = 0
             if peca != 0:
@@ -88,7 +88,7 @@ class Tabuleiro:
         self.atualiza_contagem_total()
     
     def movimentos_validos(self, peca):
-        """ Gerencia a obtenção de movimentos válidos. """
+        """Gerencia a obtenção de movimentos válidos."""
         movimentos = {}
         if peca.eh_dama:
             movimentos = self._movimentos_dama(peca)
