@@ -1,10 +1,9 @@
 import pygame
-from config import *
+from utils.config import *
 from ui.telas import *
 
 janela = pygame.display.set_mode((TELA_LARGURA, TELA_ALTURA))
 pygame.display.set_caption('Damas')
-
 tabuleiro = pygame.Surface((LARGURA_TABULEIRO, ALTURA_TABULEIRO))
 
 def main():

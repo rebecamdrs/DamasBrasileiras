@@ -1,8 +1,9 @@
 import pygame
-from config import *
+from utils.config import *
 from .peca import Peca
 
 class Tabuleiro:
+    """ Classe que cria o tabuleiro e guarda seus dados atuais. """
     def __init__(self):
         self.tabuleiro = []
         self.pecas_rosas, self.pecas_brancas = 12, 12
@@ -12,16 +13,18 @@ class Tabuleiro:
         self.desenha_tabuleiro()
 
     def desenha_quadrados(self, janela):
+        """ Desenha as casas brancas do tabuleiro. """
         janela.fill(CINZA)
         for linha in range(LINHAS):
             for coluna in range(linha % 2, COLUNAS, 2):
                 pygame.draw.rect(janela, BRANCO, (linha * TAMANHO_QUADRADO, coluna * TAMANHO_QUADRADO, TAMANHO_QUADRADO, TAMANHO_QUADRADO))
 
     def desenha_tabuleiro(self):
+        """ Cria a estrutura do tabuleiro. """
         for linha in range(LINHAS):
             self.tabuleiro.append([])
             for coluna in range(COLUNAS):
-                # condição para que as peças sejam colocadas nas casas pretas
+                # Condição para que as peças sejam colocadas nas casas pretas
                 if coluna % 2 == ((linha + 1) % 2):
                     if linha < 3:
                         self.tabuleiro[linha].append(Peca(linha, coluna, ROSA))
@@ -29,12 +32,12 @@ class Tabuleiro:
                         self.tabuleiro[linha].append(Peca(linha, coluna, BRANCO))
                     else:
                         self.tabuleiro[linha].append(0)
-                        
-                # casas "brancas" do tabuleiro ficam vazias
+                # Casas vazias do tabuleiro ficam 0
                 else: 
                     self.tabuleiro[linha].append(0)
 
     def monta_tabuleiro(self, janela):
+        """ Mostra o tabuleiro na tela: casas e peças. """
         self.desenha_quadrados(janela)
         for linha in range(LINHAS):
             for coluna in range(COLUNAS):
@@ -43,10 +46,13 @@ class Tabuleiro:
                     peca.cria_peca(janela)
     
     def atualiza_contagem_total(self):
+        """ Atualiza a contagem total de peças do tabuleiro após cada turno.
+        - Peças normais + damas """
         self.rosas_totais = self.pecas_rosas + self.damas_rosas
         self.brancas_totais = self.pecas_brancas + self.damas_brancas
 
     def mover(self, peca, linha, coluna):
+        """ Move uma peça para a casa destino selecionada. Caso a peça seja movida para a primeira/última linha, é analisado a condição de virar dama. """
         self.tabuleiro[peca.linha][peca.coluna], self.tabuleiro[linha][coluna] = self.tabuleiro[linha][coluna], self.tabuleiro[peca.linha][peca.coluna]
         peca.mover(linha, coluna)
         if (linha == LINHAS - 1 and peca.cor == ROSA) or (linha == 0 and peca.cor == BRANCO):
@@ -61,9 +67,11 @@ class Tabuleiro:
                 self.atualiza_contagem_total()
     
     def obtem_peca(self, linha, coluna):
+        """ Retorna a peça do tabuleiro que está na posição dada. """
         return self.tabuleiro[linha][coluna]
 
     def remover(self, pecas):
+        """ Remove a(s) peça(s) fornecidas do tabuleiro. """
         for peca in pecas:
             self.tabuleiro[peca.linha][peca.coluna] = 0
             if peca != 0:
@@ -80,7 +88,7 @@ class Tabuleiro:
         self.atualiza_contagem_total()
     
     def movimentos_validos(self, peca):
-        """ Gerencia a obtenção de movimentos válidos.  """
+        """ Gerencia a obtenção de movimentos válidos. """
         movimentos = {}
         if peca.eh_dama:
             movimentos = self._movimentos_dama(peca)
@@ -139,7 +147,6 @@ class Tabuleiro:
     def _movimentos_dama(self, peca):
         """ Calcula os movimentos para uma Dama """
         movimentos = {}
-
         for d_linha, d_coluna in self.direcoes:
             movimentos.update(self._verifica_diagonal(peca, d_linha, d_coluna))
         return movimentos
@@ -147,14 +154,12 @@ class Tabuleiro:
     def _verifica_diagonal(self, peca, d_linha, d_coluna):
         """ Caminha por uma diagonal, encontrando os movimentos válidos para a Dama """
         movimentos_diagonal = {}
-        # Armazena a peça inimiga que pode ser capturada no caminho
-        peca_capturada = None
+        peca_capturada = None # Peça inimiga que pode ser capturada no caminho
 
         # Itera pelas casas na diagonal, começando a 1 passo da Dama
         for i in range(1, LINHAS):
             linha_atual = peca.linha + i * d_linha
             coluna_atual = peca.coluna + i * d_coluna
-
             if not(0 <= linha_atual < LINHAS and 0 <= coluna_atual < COLUNAS):
                 break
             peca_caminho = self.tabuleiro[linha_atual][coluna_atual]
