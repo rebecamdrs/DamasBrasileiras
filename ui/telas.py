@@ -48,6 +48,10 @@ def tela_pause(tela, frame, som_ligado, controlador, modo, tempo):
                 pos = pygame.mouse.get_pos()
 
                 if bt_reiniciar.collidepoint(pos):
+                    # Contagem regressiva
+                    if modo == 'tempo':
+                        if contagem_regressiva(tela):
+                            return  
                     MOUSE_CLICK.play()
                     controlador.resetar_jogo(modo, tempo)
                     return 'reiniciar', som_ligado
