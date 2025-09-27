@@ -37,7 +37,7 @@ def tela_pause(tela, frame, som_ligado, controlador, modo, tempo):
         bt_sair = tela.blit(BOTAO_SAIR_2, (((TELA_LARGURA+25-(BOTAO_REINICIAR.get_width()-BOTAO_REGRAS_2.get_width()))//2), ((TELA_ALTURA-15+82+50)//2)))
 
         # Texto voltar ao jogo
-        texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "P" PARA VOLTAR AO JOGO.', True, AZUL_ESCURO)
+        texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "P" PARA VOLTAR AO JOGO', True, AZUL_ESCURO)
         tela.blit(texto_sair, ((TELA_LARGURA - texto_sair.get_width())//2, (TELA_ALTURA - 160) - texto_sair.get_height()//2))
 
         rosas_restantes = controlador.tabuleiro.rosas_totais
@@ -158,7 +158,7 @@ def tela_fim(tela, vencedor):
         render_texto = PRINCIPAL.render(texto, True, BRANCO)
 
         # Mensagem para voltar ao menu
-        instrucao = LETRA_PEQUENA.render('CLIQUE NA TECLA "M" PARA VOLTAR AO MENU.', True, BRANCO)
+        instrucao = LETRA_PEQUENA.render('CLIQUE NA TECLA "M" PARA VOLTAR AO MENU', True, BRANCO)
 
         # Retângulo azul escuro 
         pygame.draw.rect(tela, AZUL_ESCURO, (0, (TELA_ALTURA - 350) // 2, TELA_LARGURA, 350))
@@ -213,7 +213,7 @@ def tela_jogo(tela, tabuleiro, modo, tempo=None):
             turno(tela, cor)
 
             # Texto para pausar
-            texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "P" PARA PAUSAR O JOGO.', True, BRANCO)
+            texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "P" PARA PAUSAR O JOGO', True, BRANCO)
             tela.blit(texto_sair, ((TELA_LARGURA - texto_sair.get_width() - TELA_ALTURA//2)//2, (TELA_ALTURA - 30) - texto_sair.get_height()//2))
 
             # Verifica se o jogo terminou: se sim, retorna o vencedor
