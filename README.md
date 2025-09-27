@@ -15,6 +15,7 @@ O projeto foi estruturado com **Programação Orientada a Objetos (POO)** e divi
 | assets/                     # Recursos visuais e sonoros
 | ├─ font/                    # Arquivos de fontes usadas no jogo
 | ├─ images/                  # Arquivos de imagens usadas no jogo
+| ├─ screenshots/             # Screenshots do jogo
 | └─ sounds/                  # Arquivos de músicas e efeitos sonoros
 
 | classes/                    # Mecânica do jogo
