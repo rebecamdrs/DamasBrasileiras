@@ -33,9 +33,11 @@ Desenvolvido por **Rebeca de Medeiros Silva** e **Stefany Nicole Santos Alves** 
 ```
 
 ## 📸 Screenshots
+
 | <img src="assets/screenshots/tela_inicial.png" width="480"> | <img src="assets/screenshots/tela_modo.png" width="480"> |
-|:-------------------------:|:-------------------------:|
-| <img src="assets/screenshots/tela_jogo.png" width="480"> | <img src="assets/screenshots/tela_pause.png" width="480"> |
+|:-----------------------------------------------------------:|:--------------------------------------------------------:|
+| <img src="assets/screenshots/tela_jogo.png" width="480"> | <img src="assets/screenshots/tela_pause.png" width="480"> |
+
 
 ## ✅ Como Executar   
 
