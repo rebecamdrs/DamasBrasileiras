@@ -5,7 +5,7 @@
 # Jogo de Damas Brasileiras</h1>
 
 Um jogo de damas desenvolvido em **Python** utilizando a biblioteca `Pygame` para construção da interface gráfica, sonoplastia e manipulação de eventos.
-O projeto foi estruturado com **Programação Orientada a Objetos (POO)** e dividido em módulos para facilitar organização, manutenção e leitura código.
+O projeto foi estruturado com **Programação Orientada a Objetos (POO)** e dividido em módulos para facilitar a organização, manutenção e leitura do código.
 
 > Desenvolvido por **Rebeca de Medeiros Silva** e **Stefany Nicole Santos Alves** como projeto das disciplinas Laboratório de Programação I e Programação I, do curso de **Ciência da Computação da UFCG**, no período **2025.1**. 
 
