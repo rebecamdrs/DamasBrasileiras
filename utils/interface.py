@@ -74,3 +74,34 @@ def timer(tela, cor_tempo, segundos_restantes):
     base_temporizador = pygame.Rect((TELA_LARGURA-(TIMER.get_width()-80+381)), (70-(TIMER.get_height()+33)), 28, 105)
     rect_temporizador = temporizador.get_rect(center=base_temporizador.center)
     tela.blit(temporizador, rect_temporizador)
+
+def contagem_regressiva(tela):
+    """Exibe uma contagem regressiva (3, 2, 1, VAI!) antes de iniciar o jogo."""
+    relogio = pygame.time.Clock()
+    itens = ['3', '2', '1', 'VAI!']
+    tempo_por_item = 1000  # 1 segundo 
+
+    for item in itens:
+        if item != 'VAI!':
+            BEEP.play()
+            cor = BRANCO
+        else:
+            VAI.play()
+            cor = ROSA
+        momento_inicio = pygame.time.get_ticks()
+        
+        # Enquanto o tempo do número atual não acabar
+        while pygame.time.get_ticks() - momento_inicio < tempo_por_item:
+            relogio.tick(FPS)
+            tela.fill(AZUL_ESCURO)
+
+            texto = PRINCIPAL.render(item, True, cor)
+            posicao = texto.get_rect(center=(TELA_LARGURA // 2, TELA_ALTURA // 2))
+            tela.blit(texto, posicao)
+
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    return True 
+
+            pygame.display.update()
+    return False

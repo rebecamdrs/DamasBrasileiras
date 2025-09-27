@@ -7,7 +7,6 @@ O projeto foi estruturado com **Programação Orientada a Objetos (POO)** e divi
 
 Desenvolvido por **Rebeca de Medeiros Silva** e **Stefany Nicole Santos Alves** como projeto das disciplinas Laboratório de Programação I e Programação I, do curso de **Ciência da Computação da UFCG**, no período **2025.1**. 
 
-
 ## 📁 Estrutura do Projeto  
 
 ```
@@ -32,6 +31,11 @@ Desenvolvido por **Rebeca de Medeiros Silva** e **Stefany Nicole Santos Alves** 
 
 | main.py                     # Arquivo principal que inicia o jogo
 ```
+
+## 📸 Screenshots
+| <img src="assets/screenshots/tela_inicial.png" width="480"> | <img src="assets/screenshots/tela_modo.png" width="480"> |
+|:-------------------------:|:-------------------------:|
+| <img src="assets/screenshots/tela_jogo.png" width="480"> | <img src="assets/screenshots/tela_pause.png" width="480"> |
 
 ## ✅ Como Executar   
 

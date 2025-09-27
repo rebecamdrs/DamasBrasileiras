@@ -77,7 +77,6 @@ class Controlador:
             self.tempo_restante = tempo * 60
             self.inicio = pygame.time.get_ticks() // 1000
             self.tempo_pausado = 0
-            MUSICA_TEMPO.play(-1)
 
     def _mover(self, linha, coluna):
         """

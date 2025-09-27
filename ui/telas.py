@@ -5,7 +5,7 @@ from utils.interface import *
 from .botao import Botao
 from classes.controlador import Controlador
 
-def tela_pause(tela, frame, som_ligado, rosas_restantes, brancas_restantes, controlador, modo, tempo):
+def tela_pause(tela, frame, som_ligado, controlador, modo, tempo):
     """### Tira um print da tela e mostra que o jogo foi pausado."""
     PAUSE.play()
     clock = pygame.time.Clock()
@@ -13,10 +13,11 @@ def tela_pause(tela, frame, som_ligado, rosas_restantes, brancas_restantes, cont
         img_som = SOM_ON
     else:
         img_som = SOM_OFF
+    parar_musica(modo)
 
     while True:
         clock.tick(FPS)
-        tela.blit(frame, (0, 0)) # Tela de fundo(jogo)
+        tela.blit(frame, (0, 0))
         
         # Sobreposição
         sobreposicao = pygame.Surface((TELA_LARGURA, TELA_ALTURA), pygame.SRCALPHA)
@@ -39,11 +40,15 @@ def tela_pause(tela, frame, som_ligado, rosas_restantes, brancas_restantes, cont
         texto_sair = LETRA_PEQUENA.render('CLIQUE NA TECLA "P" PARA VOLTAR AO JOGO.', True, AZUL_ESCURO)
         tela.blit(texto_sair, ((TELA_LARGURA - texto_sair.get_width())//2, (TELA_ALTURA - 160) - texto_sair.get_height()//2))
 
+        rosas_restantes = controlador.tabuleiro.rosas_totais
+        brancas_restantes = controlador.tabuleiro.brancas_totais
+
         for evento in pygame.event.get():
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
 
                 if bt_reiniciar.collidepoint(pos):
+                    MOUSE_CLICK.play()
                     controlador.resetar_jogo(modo, tempo)
                     return 'reiniciar', som_ligado
                 if bt_som.collidepoint(pos):
@@ -53,7 +58,6 @@ def tela_pause(tela, frame, som_ligado, rosas_restantes, brancas_restantes, cont
                         img_som = SOM_OFF 
                         som_ligado = False
                     else:
-                        tocar_musica(modo, True)
                         img_som = SOM_ON
                         som_ligado = True
                 elif bt_regras.collidepoint(pos):
@@ -61,19 +65,20 @@ def tela_pause(tela, frame, som_ligado, rosas_restantes, brancas_restantes, cont
                     if not tela_regras(tela):
                         return 'fechar', som_ligado
                 elif bt_sair.collidepoint(pos):
+                    MOUSE_CLICK.play()
                     return 'sair_menu', som_ligado
                     
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_p:
                 PAUSE.play()
                 return 'continuar', som_ligado
             if evento.type == pygame.QUIT:
-                escolha = pop_up(tela, frame, rosas_restantes, brancas_restantes)
+                escolha = tela_pop_up(tela, frame, rosas_restantes, brancas_restantes)
                 if escolha == "sair":
                     return 'fechar', som_ligado
 
         pygame.display.update()
 
-def pop_up(tela, frame, rosas_restantes, brancas_restantes):
+def tela_pop_up(tela, frame, rosas_restantes, brancas_restantes):
     """ ### Pop-up mostrado para confirmar a desistencia."""
     POPUP.play()
     clock = pygame.time.Clock()
@@ -82,7 +87,7 @@ def pop_up(tela, frame, rosas_restantes, brancas_restantes):
 
     while mostrar:
         clock.tick(FPS)
-        tela.blit(frame, (0, 0)) # Tela de fundo(jogo)
+        tela.blit(frame, (0, 0))
 
         # Sobreposição
         sobreposicao = pygame.Surface((TELA_LARGURA, TELA_ALTURA), pygame.SRCALPHA)
@@ -175,10 +180,15 @@ def tela_jogo(tela, tabuleiro, modo, tempo=None):
     """### Mostra a tela de jogo baseada no modo escolhido."""
     clock = pygame.time.Clock()
     rect = tabuleiro.get_rect(topleft=(101, 100))
+
+    # Contagem regressiva
+    if modo == 'tempo':
+        if contagem_regressiva(tela):
+            return  
+    
     controlador = Controlador(tabuleiro)
     controlador.resetar_jogo(modo, tempo)
     som_ligado = True
-
     tocar_musica(modo, som_ligado)
 
     try:
@@ -217,7 +227,7 @@ def tela_jogo(tela, tabuleiro, modo, tempo=None):
                     segundos_restantes = 0
 
                 # Se acabar o tempo, fim de jogo (nenhum vencedor)
-                if segundos_restantes == 0:
+                if segundos_restantes <= 0:
                     parar_musica(modo)
                     tela_fim(tela, 'nenhum')
                     return
@@ -240,43 +250,42 @@ def tela_jogo(tela, tabuleiro, modo, tempo=None):
                 if evento.type == pygame.QUIT:
                     # Se o usuário quiser sair, mostra a tela de pop-up
                     POPUP.play()
-                    print_pop_up = tela.copy() # Salva o frame atual do jogo
+                    parar_musica(modo)
+                    print_pop_up = tela.copy()
                     if modo =='tempo':
-                        parar_musica(modo)
                         tempo_inicio_pausa = pygame.time.get_ticks() // 1000
-                        escolha = pop_up(tela, print_pop_up, rosas_restantes, brancas_restantes)
+                        escolha = tela_pop_up(tela, print_pop_up, rosas_restantes, brancas_restantes)
                         tempo_fim_pausa = pygame.time.get_ticks() // 1000
                         controlador.tempo_pausado += (tempo_fim_pausa - tempo_inicio_pausa)
-                        if escolha == 'continuar':
-                            tocar_musica(modo, som_ligado)
                     else:
-                        escolha = pop_up(tela, print_pop_up, rosas_restantes, brancas_restantes)
+                        escolha = tela_pop_up(tela, print_pop_up, rosas_restantes, brancas_restantes)
+                    tocar_musica(modo, som_ligado)
                     if escolha == "sair":
                         fechar_tela = True
-                    # se for "continuar", não faz nada e volta ao loop normal
 
                 # Gerenciamento do pause
                 if evento.type == pygame.KEYDOWN and evento.key == pygame.K_p:
-                    if modo == 'tempo':
-                        parar_musica(modo)
-                        tempo_inicio_pausa = pygame.time.get_ticks() // 1000
                     PAUSE.play()
-                    print_pausa = tela.copy() # Salva o frame atual do jogo
-                    acao_retorno, som_ligado = tela_pause(tela, print_pausa, som_ligado, rosas_restantes, brancas_restantes, controlador, modo, tempo) # Pausa o jogo
+                    parar_musica(modo)
                     if modo == 'tempo':
-                        if acao_retorno == 'continuar':
-                            tempo_fim_pausa = pygame.time.get_ticks() // 1000
-                            controlador.tempo_pausado += (tempo_fim_pausa - tempo_inicio_pausa)
-                            tocar_musica(modo, som_ligado)
-                        elif acao_retorno == 'reiniciar':
-                            pass
-                    if acao_retorno == 'sair_menu' or acao_retorno == 'fechar':
+                        tempo_inicio_pausa = pygame.time.get_ticks() // 1000
+
+                    print_pausa = tela.copy()
+                    acao_retorno, som_ligado = tela_pause(tela, print_pausa, som_ligado, controlador, modo, tempo) # Pausa o jogo
+
+                    # Se o modo for "tempo", calcula pausa
+                    if modo == 'tempo' and acao_retorno == 'continuar':
+                        tempo_fim_pausa = pygame.time.get_ticks() // 1000
+                        controlador.tempo_pausado += (tempo_fim_pausa - tempo_inicio_pausa)
+
+                    if acao_retorno in ('sair_menu', 'fechar'):
                         fechar_tela = True
+                    elif som_ligado:
+                        tocar_musica(modo, som_ligado)
                     
             controlador.atualiza_jogo()
             pygame.display.update()
     finally:
-        # Para as musicas no quando fechar a tela de jogo
         parar_musica(modo)
 
 def tela_modo_jogo(tela):
@@ -292,25 +301,20 @@ def tela_modo_jogo(tela):
         clock.tick(FPS)
         pos = pygame.mouse.get_pos()
 
-        # FUNDO
-        tela.fill(AZUL_ESCURO)
-        pygame.draw.rect(tela, ROSA, (0, 0, 30, TELA_ALTURA))
-        pygame.draw.rect(tela, AZUL_CLARO, (TELA_LARGURA-30, 0, 30, TELA_ALTURA))
-
-        # TEXTO
-        texto = LETRA_BIG.render('MODO DE JOGO', True, BRANCO)
-        tela.blit(texto, (((TELA_LARGURA-texto.get_width())//2), ((TELA_ALTURA-200)//2)))
+        # BACKGROUND E TEXTO
+        tela.blit(BG_MODO_JOGO, (0, 0))
+        tela.blit(MODO_JOGO, ((TELA_LARGURA-MODO_JOGO.get_width())//2, (TELA_ALTURA-MODO_JOGO.get_width()-80)//2))
 
         # BOTOES
-        botao_normal = tela.blit(BOTAO_NORMAL, (((TELA_LARGURA-50-(BOTAO_NORMAL.get_width()+BOTAO_TEMPO.get_width())) // 2), ((TELA_ALTURA-50)//2)))
-        botao_tempo = tela.blit(BOTAO_TEMPO, (((TELA_LARGURA+50-(BOTAO_NORMAL.get_width()-BOTAO_TEMPO.get_width())) // 2), ((TELA_ALTURA-50)//2)))
+        botao_normal = tela.blit(BOTAO_NORMAL, (((TELA_LARGURA-BOTAO_NORMAL.get_width()) // 2), ((TELA_ALTURA-50)//2)))
+        botao_tempo = tela.blit(BOTAO_TEMPO, (((TELA_LARGURA-BOTAO_TEMPO.get_width()) // 2), ((TELA_ALTURA+130)//2)))
 
         # TEMPOS
         # Posições
-        x1 = (TELA_LARGURA + 70 - (BOTAO_NORMAL.get_width() - BOTAO_TEMPO.get_width())) // 2
-        x2 = (TELA_LARGURA + 350 - (BOTAO_NORMAL.get_width() - BOTAO_TEMPO.get_width())) // 2
-        y1 = (TELA_ALTURA + BOTAO_TEMPO.get_height() + 50) // 2
-        y2 = (TELA_ALTURA + BOTAO_TEMPO.get_height() + 185) // 2
+        x1 = (TELA_LARGURA - 260 - (BOTAO_NORMAL.get_width() - BOTAO_TEMPO.get_width())) // 2
+        x2 = (TELA_LARGURA + 20 - (BOTAO_NORMAL.get_width() - BOTAO_TEMPO.get_width())) // 2
+        y1 = (TELA_ALTURA + BOTAO_TEMPO.get_height() + 230) // 2
+        y2 = (TELA_ALTURA + BOTAO_TEMPO.get_height() + 365) // 2
 
         # Bases
         base_min3 = pygame.Rect(x1, y1, 120, 45)
@@ -340,25 +344,23 @@ def tela_modo_jogo(tela):
         # Somente se o modo de tempo for selecionado, aparecem as opções de tempo
         if modo == 'tempo':
             ultimo_hover = tempos(tela, pos, base_min3, base_min5, base_min10, base_min15, ultimo_hover)
-        
         pygame.display.update()
         
     if modo == 'tempo' and tempo is None:
         return None, None
-    
     return modo, tempo
 
 def tela_regras(tela):
     """###Mostra a tela de regras do jogo."""
     while True:
-        # Voltar ao menu ou sair
+        tela.blit(BG_TELA_REGRAS, (0, 0))
+
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 return False
             if evento.type == pygame.KEYDOWN:
                 return True
-
-        tela.blit(BG_TELA_REGRAS, (0, 0))
+        
         pygame.display.update()
 
 def tela_inicial(tela, tabuleiro):
@@ -389,7 +391,7 @@ def tela_inicial(tela, tabuleiro):
                 # Tela de jogo
                 if botao_jogar.verifica_posicao(posicao_mouse_menu):
                     MOUSE_CLICK.play()
-                    MUSICA_INICIAL.fadeout(700)
+                    MUSICA_INICIAL.fadeout(500)
                     modo, tempo = tela_modo_jogo(tela)
                     if modo == 'normal':
                         tela_jogo(tela, tabuleiro, modo)
