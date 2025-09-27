@@ -1,17 +1,14 @@
+# Jogo de Damas Brasileiras</h1>
+
+Um jogo de damas desenvolvido em **Python** utilizando a biblioteca `Pygame` para construção da interface gráfica, sonoplastia e manipulação de eventos.
+O projeto foi estruturado com **Programação Orientada a Objetos (POO)** e dividido em módulos para facilitar organização, manutenção e leitura código.
+
 ## Autoras
 
-Desenvolvido por **Rebeca de Medeiros Silva** e **Stefany Nicole Santos Alves** como projeto das disciplinas **Laboratório de Programação I** e **Programação I** do curso de **Ciência da Computação - UFCG** no período **2025.1**.  
+Desenvolvido por **Rebeca de Medeiros Silva** e **Stefany Nicole Santos Alves** como projeto das disciplinas Laboratório de Programação I e Programação I, do curso de **Ciência da Computação da UFCG**, no período **2025.1**. 
 
----
 
-# Jogo de Damas  
-
-Um jogo de damas desenvolvido em **Python** utilizando a biblioteca **Pygame** para construção da interface gráfica, sonoplastia e manipulação de eventos.
-O projeto foi estruturado com **Programação Orientada a Objetos (POO)** e dividido em módulos para facilitar organização, manutenção e leitura código.  
-
----
-
-## Estrutura do Projeto  
+## 📁 Estrutura do Projeto  
 
 ```
 | assets/                     # Recursos visuais e sonoros
@@ -36,9 +33,7 @@ O projeto foi estruturado com **Programação Orientada a Objetos (POO)** e divi
 | main.py                     # Arquivo principal que inicia o jogo
 ```
 
----
-
-## Como Executar   
+## ✅ Como Executar   
 
 O jogo utiliza a biblioteca **Pygame 2.6+**, que deve ser instalada antes da execução.  
 
@@ -61,9 +56,8 @@ O jogo utiliza a biblioteca **Pygame 2.6+**, que deve ser instalada antes da exe
    python main.py
    ```
 
----
 
-## Funcionalidades  
+## 💡 Funcionalidades  
 
 - Interface gráfica amigável utilizando **Pygame**  
 - Dois modos de jogo: **normal** e **tempo** com opções de 3min, 5min, 10min ou 15min.
@@ -73,9 +67,8 @@ O jogo utiliza a biblioteca **Pygame 2.6+**, que deve ser instalada antes da exe
 - Tela pop-up ao clicar em **"X"**, confirmando se o jogador quer realmente sair  
 - Tela final com resultado da partida (jogador vencedor, empate, tempo esgotado)
 
----
 
-## Mecânicas do Jogo  
+## ⚙️ Mecânicas do Jogo  
 
 - **Captura normal** – peças podem capturar oponente avançando sobre elas.  
 - **Captura voltando** – é permitido capturar peças também ao retornar.  
@@ -87,9 +80,8 @@ O jogo utiliza a biblioteca **Pygame 2.6+**, que deve ser instalada antes da exe
   - Nenhum jogador tem mais movimentos possíveis.  
   - Pela **regra dos 20 lances** (quando não há captura ou promoção por 20 jogadas consecutivas, ambos jogadores).  
 
----
 
-## Tecnologias Utilizadas  
+## 🛠️ Tecnologias Utilizadas  
 
 - **Python 3.12+**  
 - **Pygame 2.6+** (biblioteca principal para gráficos e sons)  
