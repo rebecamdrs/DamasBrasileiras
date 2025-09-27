@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/screenshots/BANNER.png" alt="Banner do Jogo de Damas" width="100%">
+</p>
+
 # Jogo de Damas Brasileiras</h1>
 
 Um jogo de damas desenvolvido em **Python** utilizando a biblioteca `Pygame` para construção da interface gráfica, sonoplastia e manipulação de eventos.
