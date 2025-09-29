@@ -14,4 +14,6 @@ def main():
         relogio.tick(FPS)
         rodando = tela_inicial(janela, tabuleiro)
     pygame.quit()
-main()
+
+if __name__ == '__main__':
+    main()
