@@ -90,7 +90,7 @@ O jogo utiliza a biblioteca **Pygame 2.6+**, que deve ser instalada antes da exe
   - Pela **regra dos 20 lances** (quando não há captura ou promoção por 20 jogadas consecutivas, ambos jogadores).  
 
 
-## 🛠️ Tecnologias Utilizadas  
+## ⚠️ Requisitos
 
 - **Python 3.12+**  
 - **Pygame 2.6+** (biblioteca principal para gráficos e sons)  
