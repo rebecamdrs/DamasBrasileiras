@@ -65,7 +65,6 @@ O jogo utiliza a biblioteca **Pygame 2.6+**, que deve ser instalada antes da exe
    python main.py
    ```
 
-
 ## 💡 Funcionalidades  
 
 - Interface gráfica amigável utilizando **Pygame**  
@@ -75,6 +74,10 @@ O jogo utiliza a biblioteca **Pygame 2.6+**, que deve ser instalada antes da exe
 - Tela de pausa com opções de reinício, regras, silenciar música ou sair  
 - Tela pop-up ao clicar em **"X"**, confirmando se o jogador quer realmente sair  
 - Tela final com resultado da partida (jogador vencedor, empate, tempo esgotado)
+
+### Interface
+Como forma de planejamento, fizemos um projeto no **`Figma`** da interface do jogo. Todos as peças, telas e botões foram criações de @rebecamdrs.
+> **Link para vizualização:** https://www.figma.com/design/irIIb8WCs0zULefe4NoBgw/PLAN--JOGO-DAMAS?node-id=0-1&t=eJLXDcwi2HsxUqvV-1
 
 
 ## ⚙️ Mecânicas do Jogo  
