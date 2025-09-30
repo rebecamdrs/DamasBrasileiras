@@ -56,7 +56,7 @@ O jogo utiliza a biblioteca **Pygame 2.6+**, que deve ser instalada antes da exe
 
 3. **Clone o repositório**  
    ```bash
-   git clone https://github.com/rebecamdrs/Projeto-Damas
+   git clone https://github.com/rebecamdrs/DamasBrasileiras
    cd repositorio
    ```
 
